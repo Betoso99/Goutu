@@ -27,6 +27,13 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+
+            <!-- Setting up Google Maps API Key -->
+            <meta-data
+              android:name="com.google.android.geo.API_KEY"
+              android:value="AIzaSyB_iMzzl__vncphopqHr8r51Frw5H_q2eU"
+              />
+  
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
