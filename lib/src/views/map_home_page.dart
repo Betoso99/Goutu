@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -30,6 +29,21 @@ class MapSampleState extends State<MapSample> {
       appBar: AppBar(
         title: const Text('Login Page'),
         backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: (){
+
+              },
+              child: const Icon(
+                Icons.account_circle_rounded,
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: GoogleMap(
         mapType: MapType.hybrid,

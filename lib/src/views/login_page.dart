@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
-class loginPage extends StatefulWidget{
+class LoginPage extends StatefulWidget{
   static String identifier = 'loginPage';
-  const loginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<loginPage> {
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
