@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:goutu/src/sub_views/profile_page.dart';
+import 'package:goutu/widgets/destination_displayer.dart';
 
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
@@ -32,10 +34,13 @@ class MapSampleState extends State<MapSample> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           Padding(
-              padding: EdgeInsets.only(right: 20.0),
+              padding: const EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: (){
-
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfilePage())
+                );
               },
               child: const Icon(
                 Icons.account_circle_rounded,
@@ -45,23 +50,32 @@ class MapSampleState extends State<MapSample> {
           ),
         ],
       ),
-      body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: const Text('To the lake!'),
-        icon: const Icon(Icons.directions_boat),
+      body: Stack(
+        children: [
+            GoogleMap(
+            mapType: MapType.hybrid,
+            initialCameraPosition: _kGooglePlex,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+          ),
+          const Visibility(
+              child: Display()
+          ),
+        ],
       ),
     );
   }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  }
 }
+
+
+// floatingActionButton: FloatingActionButton.extended(
+//   onPressed: _goToTheLake,
+//   label: const Text('To the lake!'),
+//   icon: const Icon(Icons.directions_boat),
+// ),
+
+  // Future<void> _goToTheLake() async {
+  //   final GoogleMapController controller = await _controller.future;
+  //   controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  // }
