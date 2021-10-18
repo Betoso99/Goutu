@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/src/sub_views/new_home_page.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/widgets/tabbed_widget.dart';
 
@@ -17,7 +18,7 @@ class Tabbed extends StatelessWidget {
           bottomNavigationBar: menu(),
           body: const TabBarView(
             children: [
-              Icon(Icons.directions_car),
+              NewHomePage(),
               Icon(Icons.directions_transit),
               ProfilePage(),
             ],
