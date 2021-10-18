@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/src/sub_views/likes_page.dart';
 import 'package:goutu/src/sub_views/new_home_page.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/widgets/tabbed_widget.dart';
@@ -19,7 +20,7 @@ class Tabbed extends StatelessWidget {
           body: const TabBarView(
             children: [
               NewHomePage(),
-              Icon(Icons.directions_transit),
+              LikesPage(),
               ProfilePage(),
             ],
           ),
