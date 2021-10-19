@@ -68,7 +68,7 @@ class _ProfilePage extends State<ProfilePage> {
                   children: const [
                     Text(
                       "Alberto Osorio",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                     Text(
                       "829-703-2220",

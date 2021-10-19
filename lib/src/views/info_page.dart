@@ -74,7 +74,7 @@ class _InfoPage extends State<InfoPage> {
                                   ),
                                 ),
                                 const Text(
-                                  "Percio: DOP 95",
+                                  "Precio: DOP 95",
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
