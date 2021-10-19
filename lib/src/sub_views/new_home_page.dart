@@ -37,6 +37,25 @@ class _NewHomePage extends State<NewHomePage> {
         appBar: AppBar(
           title: const Text('Home Page'),
           backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              child: GestureDetector(
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MapSample())
+                  );
+                },
+                child: Flexible(
+                  child: Image.asset('images/tempsnip.png',
+                    height: 400,
+                    alignment: Alignment.bottomRight,
+                  ),
+                ),
+              )
+            ),
+          ],
         ),
         body: Stack(
           children: [

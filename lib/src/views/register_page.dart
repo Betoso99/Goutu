@@ -53,6 +53,9 @@ StatefulWidget _usernameText(){
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: const TextField(
             keyboardType: TextInputType.emailAddress,
+            style: TextStyle(
+                color: Colors.white
+            ),
             decoration: InputDecoration(
                 icon: Icon(
                   Icons.email,
@@ -81,6 +84,9 @@ StatefulWidget _passwordText(){
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
+            style: TextStyle(
+                color: Colors.white
+            ),
             decoration: InputDecoration(
                 icon: Icon(
                   Icons.lock,
@@ -109,6 +115,9 @@ StatefulWidget _confirmPasswordText(){
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
+            style: TextStyle(
+                color: Colors.white
+            ),
             decoration: InputDecoration(
                 icon: Icon(
                   Icons.lock,
@@ -132,12 +141,8 @@ StatefulWidget _registerButton(){
   return StreamBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return ElevatedButton(
-          onPressed: (){
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HomePage())
-            );
-          },
+          onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), ModalRoute.withName('/'),
+          ),
           style: ElevatedButton.styleFrom(
               primary: const Color.fromRGBO(255, 80, 47, 1.0)
           ),

@@ -35,6 +35,25 @@ class _LikesPage extends State<LikesPage> {
         appBar: AppBar(
           title: const Text('Likes Page'),
           backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
+          actions: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              child: GestureDetector(
+                onTap: () async {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MapSample())
+                  );
+                },
+                child: Flexible(
+                  child: Image.asset('images/tempsnip.png',
+                    height: 400,
+                    alignment: Alignment.bottomRight,
+                  ),
+                ),
+              )
+            ),
+          ],
         ),
         body: Stack(
           children: [
@@ -79,10 +98,10 @@ class _LikesPage extends State<LikesPage> {
                     height: 100,
                     color: Colors.white12,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             const SizedBox(width: 10),
                             Container(

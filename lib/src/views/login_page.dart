@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/src/sub_views/new_home_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
 class LoginPage extends StatefulWidget{
@@ -51,6 +52,9 @@ StatefulWidget _usernameText(){
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: const TextField(
             keyboardType: TextInputType.emailAddress,
+            style: TextStyle(
+                color: Colors.white
+            ),
             decoration: InputDecoration(
               icon: Icon(
                 Icons.email,
@@ -62,7 +66,7 @@ StatefulWidget _usernameText(){
               hintText: 'example@gmail.com',
               hintStyle: TextStyle(color: Colors.white),
               labelText: 'Email Address',
-              labelStyle: TextStyle(color: Colors.white)
+              labelStyle: TextStyle(color: Colors.white),
             ),
           ),
         );
@@ -79,6 +83,9 @@ StatefulWidget _passwordText(){
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
+            style: TextStyle(
+              color: Colors.white
+            ),
             decoration: InputDecoration(
                 icon: Icon(
                   Icons.lock,
@@ -102,12 +109,8 @@ StatefulWidget _loginButton(){
   return StreamBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return ElevatedButton(
-          onPressed: (){
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MapSample())
-            );
-          },
+          onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const MapSample()), ModalRoute.withName('/'),
+            ),
           style: ElevatedButton.styleFrom(
             primary: const Color.fromRGBO(255, 80, 47, 1.0),
           ),

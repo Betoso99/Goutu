@@ -15,52 +15,52 @@ class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    target: LatLng(18.472252, -69.917956),
+    zoom: 16,
   );
 
   static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+      target: LatLng(18.488562,-69.972038),
+      zoom: 16);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
-        backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
+        title: const Text("Home Page"),
         automaticallyImplyLeading: false,
+        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.only(right: 20.0, top: 12, bottom: 12),
-            child: GestureDetector(
-              onTap: (){
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ProfilePage())
-                );
-              },
+          GestureDetector(
+            onTap: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage())
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10, right: 12),
               child: Container(
+                height: 40,
+                width: 37,
                 child: const Icon(
                   Icons.person,
                   color: Colors.white,
                   size: 30,
                 ),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40.0),
-                    color: const Color.fromRGBO(255, 80, 847, 1),
-                ),
+                    borderRadius: BorderRadius.circular(100.0),
+                    color: const Color.fromRGBO(255, 80, 847, 1)),
               ),
             ),
-          ),
+          )
         ],
       ),
       body: Stack(
-        children: [
-            GoogleMap(
-            mapType: MapType.hybrid,
+        children: <Widget> [
+          GoogleMap(
+            myLocationEnabled: true,
+            mapType: MapType.normal,
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
@@ -71,18 +71,20 @@ class MapSampleState extends State<MapSample> {
           ),
         ],
       ),
+      floatingActionButton: Align(
+        alignment: const Alignment(1, 0.65),
+        child: FloatingActionButton(
+          onPressed: _goToMe,
+          child: const Icon(Icons.my_location),
+          //backgroundColor: const Color.fromRGBO(16, 16, 16, 0),
+        ),
+      )
+      //floatingActionButtonLocation: FloatingActionButtonLocation.,
     );
   }
+
+  Future<void> _goToMe() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  }
 }
-
-
-// floatingActionButton: FloatingActionButton.extended(
-//   onPressed: _goToTheLake,
-//   label: const Text('To the lake!'),
-//   icon: const Icon(Icons.directions_boat),
-// ),
-
-  // Future<void> _goToTheLake() async {
-  //   final GoogleMapController controller = await _controller.future;
-  //   controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  // }

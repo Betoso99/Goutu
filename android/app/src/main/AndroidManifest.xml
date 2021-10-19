@@ -28,21 +28,22 @@
               android:resource="@drawable/launch_background"
               />
 
-            <!-- Setting up Google Maps API Key -->
-            <meta-data
-              android:name="com.google.android.geo.API_KEY"
-              android:value="AIzaSyB_iMzzl__vncphopqHr8r51Frw5H_q2eU"
-              />
-  
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+       <!-- Setting up Google Maps API Key -->
+       <meta-data
+           android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyB_iMzzl__vncphopqHr8r51Frw5H_q2eU"
+           />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 </manifest>

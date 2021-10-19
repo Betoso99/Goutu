@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:goutu/src/views/home_page.dart';
-import 'package:goutu/src/views/login_page.dart';
 
 void main() {
   runApp(const MyApp());
