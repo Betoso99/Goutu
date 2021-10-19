@@ -11,7 +11,7 @@ class NewHomePage extends StatefulWidget {
 }
 
 class _NewHomePage extends State<NewHomePage> {
-  //final List<>
+
   final List<String> entries = <String>[
     'Jardin Botanico',
     'Marbella',
@@ -143,7 +143,7 @@ class _NewHomePage extends State<NewHomePage> {
                                   child: const Icon(
                                     Icons.info_outline,
                                     color: Colors.white,
-                                    size: 40,
+                                    size: 30,
                                   ),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -161,7 +161,7 @@ class _NewHomePage extends State<NewHomePage> {
                                   child: const Icon(
                                     Icons.save_alt,
                                     color: Colors.white,
-                                    size: 40,
+                                    size: 30,
                                   ),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),

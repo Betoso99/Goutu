@@ -7,8 +7,8 @@ class Display extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.28,
-      minChildSize: 0.28,
+      initialChildSize: 0.20,
+      minChildSize: 0.20,
       builder: (BuildContext context, myScrollerController) {
         return Container(
           decoration: const BoxDecoration(

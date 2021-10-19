@@ -34,7 +34,7 @@ class MapSampleState extends State<MapSample> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(right: 20.0),
+              padding: const EdgeInsets.only(right: 20.0, top: 12, bottom: 12),
             child: GestureDetector(
               onTap: (){
                 Navigator.push(
@@ -42,9 +42,16 @@ class MapSampleState extends State<MapSample> {
                     MaterialPageRoute(builder: (context) => const ProfilePage())
                 );
               },
-              child: const Icon(
-                Icons.account_circle_rounded,
-                size: 26.0,
+              child: Container(
+                child: const Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40.0),
+                    color: const Color.fromRGBO(255, 80, 847, 1),
+                ),
               ),
             ),
           ),

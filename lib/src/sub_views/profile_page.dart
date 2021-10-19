@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/src/views/account_page.dart';
 
 class ProfilePage extends StatefulWidget {
   static String identifier = 'loginPage';
@@ -63,31 +64,39 @@ class _ProfilePage extends State<ProfilePage> {
               style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: space),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: leftpad,
+            GestureDetector(
+              onTap: () async {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AccountPage())
+                );
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: leftpad,
+                    ),
                   ),
-                ),
-                Container(
-                  child: const Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 40,
+                  Container(
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: const Color.fromRGBO(253, 175, 1, 1)),
                   ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                ),
-                const Text(
-                  "Cuenta",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                )
-              ],
+                  const Text(
+                    "Cuenta",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
             ),
             SizedBox(height: space),
             Row(

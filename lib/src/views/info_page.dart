@@ -51,18 +51,8 @@ class _InfoPage extends State<InfoPage> {
                                     horizontal: leftpad,
                                   ),
                                 ),
-                                Container(
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                                ),
                                 const Text(
-                                  "Cuenta",
+                                  "Distancia: 1.5km",
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
@@ -83,18 +73,8 @@ class _InfoPage extends State<InfoPage> {
                                     horizontal: leftpad,
                                   ),
                                 ),
-                                Container(
-                                  child: const Icon(
-                                    Icons.archive_rounded,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                                ),
                                 const Text(
-                                  "Notificaciones",
+                                  "Percio: DOP 95",
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
@@ -115,20 +95,31 @@ class _InfoPage extends State<InfoPage> {
                                     horizontal: leftpad,
                                   ),
                                 ),
-                                Container(
-                                  child: const Icon(
-                                    Icons.settings,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                                ),
                                 const Text(
-                                  "Configuraciones",
+                                  "# Transferencias 3",
                                   style: TextStyle(
                                     fontSize: 20,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(height: space),
+                            const Text(
+                              "-------------------------------------------------------------------------",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: leftpad,
+                                  ),
+                                ),
+                                const Text(
+                                  "...",
+                                  style: TextStyle(
+                                    fontSize: 40,
                                     color: Colors.white,
                                   ),
                                 )
@@ -137,30 +128,32 @@ class _InfoPage extends State<InfoPage> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 100,
-                          left: 60
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(255, 80, 47, 1),
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            "Jardin Botanico",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 35
-                            ),
-                          ),
-                        ),
-                      )
                     ],
                   )
                 );
               },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                right: 35,
+                left: 35,
+                top: 90,
+                bottom: 510
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromRGBO(255, 80, 47, 1),
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  "Jardin Botanico",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 40
+                  ),
+                ),
+              ),
             )
           ],
         ),

@@ -120,7 +120,7 @@ class _LikesPage extends State<LikesPage> {
                                         child: const Icon(
                                           Icons.location_on_outlined,
                                           color: Colors.white,
-                                          size: 40,
+                                          size: 30,
                                         ),
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -142,7 +142,7 @@ class _LikesPage extends State<LikesPage> {
                                         child: const Icon(
                                           Icons.info_outlined,
                                           color: Colors.white,
-                                          size: 40,
+                                          size: 30,
                                         ),
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -163,7 +163,7 @@ class _LikesPage extends State<LikesPage> {
                                         child: const Icon(
                                           Icons.delete,
                                           color: Colors.white,
-                                          size: 40,
+                                          size: 30,
                                         ),
                                         decoration: BoxDecoration(
                                             borderRadius:
