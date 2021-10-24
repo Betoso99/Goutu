@@ -30,12 +30,12 @@ class _ProfilePage extends State<ProfilePage> {
                       MaterialPageRoute(builder: (context) => const MapSample())
                   );
                 },
-                child: Flexible(
+                //child: Flexible(
                   child: Image.asset('images/tempsnip.png',
                     height: 400,
                     alignment: Alignment.bottomRight,
                   ),
-                ),
+                //),
               )
             ),
           ],

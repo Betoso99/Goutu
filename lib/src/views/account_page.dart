@@ -131,7 +131,7 @@ class _AccountPage extends State<AccountPage> {
                   ),
                 ),
                 const Text(
-                  "Eliminar Cuneta",
+                  "Eliminar Cuenta",
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.red,

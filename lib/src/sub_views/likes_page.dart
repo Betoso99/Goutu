@@ -37,22 +37,20 @@ class _LikesPage extends State<LikesPage> {
           backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
           actions: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 12),
-              child: GestureDetector(
-                onTap: () async {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MapSample())
-                  );
-                },
-                child: Flexible(
-                  child: Image.asset('images/tempsnip.png',
+                padding: const EdgeInsets.only(top: 12, bottom: 12),
+                child: GestureDetector(
+                  onTap: () async {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MapSample()));
+                  },
+                  child: Image.asset(
+                    'images/tempsnip.png',
                     height: 400,
                     alignment: Alignment.bottomRight,
                   ),
-                ),
-              )
-            ),
+                )),
           ],
         ),
         body: Stack(
@@ -132,8 +130,9 @@ class _LikesPage extends State<LikesPage> {
                                       onTap: () async {
                                         Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => const MapSample())
-                                        );
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const MapSample()));
                                       },
                                       child: Container(
                                         child: const Icon(
@@ -154,7 +153,9 @@ class _LikesPage extends State<LikesPage> {
                                       onTap: () async {
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(builder: (context) => const InfoPage()),
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const InfoPage()),
                                         );
                                       },
                                       child: Container(
@@ -173,10 +174,13 @@ class _LikesPage extends State<LikesPage> {
                                     ),
                                     const SizedBox(width: 10),
                                     GestureDetector(
-                                      onTap: () async {
-
+                                      onTap: () {
                                         //Delete from list
-
+                                        entries.removeAt(index);
+                                        km.removeAt(index);
+                                        precios.removeAt(index);
+                                        imagesSRC.removeAt(index);
+                                        //initState();
                                       },
                                       child: Container(
                                         child: const Icon(

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:goutu/models/places.dart';
+import 'package:goutu/models/list_pages.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
@@ -11,6 +13,20 @@ class NewHomePage extends StatefulWidget {
 }
 
 class _NewHomePage extends State<NewHomePage> {
+  // factory Places.fromJson (Map<String, dynamic> parsedJson){
+  //   return Places(
+  //       entries: parsedJson['entries'],
+  //       km: parsedJson['km'],
+  //       price: parsedJson['price'],
+  //       image: parsedJson['image'],
+  //       transferNum: parsedJson['transferNum']
+  //   );
+  // }
+  //
+  // ListPages myList = ListPages(
+  //     suggest,
+  //     favorites
+  // )
 
   final List<String> entries = <String>[
     'Jardin Botanico',
@@ -44,17 +60,16 @@ class _NewHomePage extends State<NewHomePage> {
                 onTap: () async {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const MapSample())
-                  );
+                      MaterialPageRoute(
+                          builder: (context) => const MapSample()));
                 },
-                child: Flexible(
-                  child: Image.asset('images/tempsnip.png',
-                    height: 400,
-                    alignment: Alignment.bottomRight,
-                  ),
+                child: Image.asset(
+                  'images/tempsnip.png',
+                  height: 400,
+                  alignment: Alignment.bottomRight,
                 ),
-              )
-            ),
+              ),
+            )
           ],
         ),
         body: Stack(
@@ -67,9 +82,7 @@ class _NewHomePage extends State<NewHomePage> {
                 color: Colors.grey,
                 child: TextField(
                   onChanged: (String str) {
-
                     //Logica de Filtro
-
                   },
                   decoration: InputDecoration(
                     icon: Container(
@@ -108,8 +121,8 @@ class _NewHomePage extends State<NewHomePage> {
                           onTap: () async {
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const MapSample())
-                            );
+                                MaterialPageRoute(
+                                    builder: (context) => const MapSample()));
                           },
                           child: Row(
                             children: [
@@ -155,8 +168,9 @@ class _NewHomePage extends State<NewHomePage> {
                                 onTap: () async {
                                   Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const InfoPage())
-                                  );
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const InfoPage()));
                                 },
                                 child: Container(
                                   child: const Icon(
@@ -166,15 +180,14 @@ class _NewHomePage extends State<NewHomePage> {
                                   ),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      color: const Color.fromRGBO(253, 175, 1, 1)),
+                                      color:
+                                          const Color.fromRGBO(253, 175, 1, 1)),
                                 ),
                               ),
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () async {
-
                                   //Add likes
-
                                 },
                                 child: Container(
                                   child: const Icon(
@@ -184,7 +197,8 @@ class _NewHomePage extends State<NewHomePage> {
                                   ),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      color: const Color.fromRGBO(255, 80, 47, 1)),
+                                      color:
+                                          const Color.fromRGBO(255, 80, 47, 1)),
                                 ),
                               ),
                               const SizedBox(width: 20),
