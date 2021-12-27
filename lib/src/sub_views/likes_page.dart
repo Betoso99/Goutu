@@ -1,7 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:goutu/models/places.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
+
+final List<Places> places = <Places>[
+  Places(entries: 'Jardin Botanico', km: '1.5km', price: 'DOP 95', image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
+  Places(entries: 'Marbella', km: '2.5km', price: 'DOP 120', image: "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"),
+  Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
+];
 
 class LikesPage extends StatefulWidget {
   const LikesPage({Key? key}) : super(key: key);
@@ -11,23 +18,6 @@ class LikesPage extends StatefulWidget {
 }
 
 class _LikesPage extends State<LikesPage> {
-  //final List<>
-  final List<String> entries = <String>[
-    'Jardin Botanico',
-    'Marbella',
-  ];
-
-  final List<String> km = <String>['1.5km', '2.5km'];
-
-  final List<String> precios = <String>['DOP 95', 'DOP 120'];
-
-  final List<String> imagesSRC = <String>[
-    "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg",
-    "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"
-  ];
-
-  //final List<int> colorCodes = <int>[600, 500, 100];
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -64,6 +54,11 @@ class _LikesPage extends State<LikesPage> {
                 child: TextField(
                   onChanged: (String str) {
                     //Logica de Filtro
+                    if (str.isEmpty) {
+                      setState(() {});
+                      return;
+                    }
+
                   },
                   decoration: InputDecoration(
                     icon: Container(
@@ -90,7 +85,7 @@ class _LikesPage extends State<LikesPage> {
               padding: const EdgeInsets.only(top: 60),
               child: ListView.separated(
                 padding: const EdgeInsets.all(15),
-                itemCount: entries.length,
+                itemCount: places.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     height: 100,
@@ -108,7 +103,7 @@ class _LikesPage extends State<LikesPage> {
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   fit: BoxFit.fill,
-                                  image: NetworkImage(imagesSRC[index]),
+                                  image: NetworkImage(places[index].image.toString()),
                                 ),
                               ),
                             ),
@@ -118,7 +113,7 @@ class _LikesPage extends State<LikesPage> {
                               children: [
                                 const SizedBox(height: 20),
                                 Text(
-                                  entries[index],
+                                  places[index].entries.toString(),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 const SizedBox(height: 10),
@@ -176,10 +171,8 @@ class _LikesPage extends State<LikesPage> {
                                     GestureDetector(
                                       onTap: () {
                                         //Delete from list
-                                        entries.removeAt(index);
-                                        km.removeAt(index);
-                                        precios.removeAt(index);
-                                        imagesSRC.removeAt(index);
+                                        places.removeAt(index);
+                                        setState(() {});
                                         //initState();
                                       },
                                       child: Container(

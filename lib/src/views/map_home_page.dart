@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/widgets/destination_displayer.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
@@ -11,16 +13,24 @@ class MapSample extends StatefulWidget {
   State<MapSample> createState() => MapSampleState();
 }
 
+var lat, lon;
+void getLocation() async {
+  LocationPermission permission = await Geolocator.requestPermission();
+  var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  lat = position.latitude;
+  lon = position.longitude;
+}
 class MapSampleState extends State<MapSample> {
+  //final Location location = Location();
   final Completer<GoogleMapController> _controller = Completer();
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(18.472252, -69.917956),
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(18.472346, -69.918128),
     zoom: 16,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      target: LatLng(18.488562,-69.972038),
+  static final CameraPosition _MyLoc = CameraPosition(
+      target: LatLng(lat,lon),
       zoom: 16);
 
   @override
@@ -65,26 +75,22 @@ class MapSampleState extends State<MapSample> {
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
             },
+            mapToolbarEnabled: true,
+            buildingsEnabled: true,
+            compassEnabled: true,
+
           ),
           const Visibility(
               child: Display()
           ),
         ],
       ),
-      floatingActionButton: Align(
-        alignment: const Alignment(1, 0.65),
-        child: FloatingActionButton(
-          onPressed: _goToMe,
-          child: const Icon(Icons.my_location),
-          //backgroundColor: const Color.fromRGBO(16, 16, 16, 0),
-        ),
-      )
       //floatingActionButtonLocation: FloatingActionButtonLocation.,
     );
   }
 
   Future<void> _goToMe() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+    controller.animateCamera(CameraUpdate.newCameraPosition(_MyLoc));
   }
 }

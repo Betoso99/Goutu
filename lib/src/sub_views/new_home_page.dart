@@ -5,6 +5,12 @@ import 'package:goutu/models/list_pages.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
+final List<Places> places = <Places>[
+  Places(entries: 'Jardin Botanico', km: '1.5km', price: 'DOP 95', image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
+  Places(entries: 'Marbella', km: '2.5km', price: 'DOP 120', image: "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"),
+  Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
+];
+
 class NewHomePage extends StatefulWidget {
   const NewHomePage({Key? key}) : super(key: key);
 
@@ -13,38 +19,6 @@ class NewHomePage extends StatefulWidget {
 }
 
 class _NewHomePage extends State<NewHomePage> {
-  // factory Places.fromJson (Map<String, dynamic> parsedJson){
-  //   return Places(
-  //       entries: parsedJson['entries'],
-  //       km: parsedJson['km'],
-  //       price: parsedJson['price'],
-  //       image: parsedJson['image'],
-  //       transferNum: parsedJson['transferNum']
-  //   );
-  // }
-  //
-  // ListPages myList = ListPages(
-  //     suggest,
-  //     favorites
-  // )
-
-  final List<String> entries = <String>[
-    'Jardin Botanico',
-    'Marbella',
-    'Los Tres Ojos'
-  ];
-
-  final List<String> km = <String>['1.5km', '2.5km', '1km'];
-
-  final List<String> precios = <String>['DOP 95', 'DOP 120', 'DOP 75'];
-
-  final List<String> imagesSRC = <String>[
-    "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg",
-    "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg",
-    "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"
-  ];
-
-  //final List<int> colorCodes = <int>[600, 500, 100];
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +57,10 @@ class _NewHomePage extends State<NewHomePage> {
                 child: TextField(
                   onChanged: (String str) {
                     //Logica de Filtro
+                    if (str.isEmpty) {
+                      setState(() {});
+                      return;
+                    }
                   },
                   decoration: InputDecoration(
                     icon: Container(
@@ -109,7 +87,7 @@ class _NewHomePage extends State<NewHomePage> {
               padding: const EdgeInsets.only(top: 60),
               child: ListView.separated(
                 padding: const EdgeInsets.all(15),
-                itemCount: entries.length,
+                itemCount: places.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     height: 100,
@@ -133,7 +111,7 @@ class _NewHomePage extends State<NewHomePage> {
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(imagesSRC[index]),
+                                    image: NetworkImage(places[index].image.toString()),
                                   ),
                                 ),
                               ),
@@ -143,16 +121,16 @@ class _NewHomePage extends State<NewHomePage> {
                                 children: [
                                   const SizedBox(height: 20),
                                   Text(
-                                    entries[index],
+                                    places[index].entries.toString(),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
-                                    km[index],
+                                    places[index].km.toString(),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                   Text(
-                                    precios[index],
+                                    places[index].price.toString(),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                 ],
@@ -187,7 +165,10 @@ class _NewHomePage extends State<NewHomePage> {
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () async {
+
                                   //Add likes
+
+
                                 },
                                 child: Container(
                                   child: const Icon(
