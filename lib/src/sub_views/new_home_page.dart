@@ -1,18 +1,47 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
 import 'package:goutu/models/list_pages.dart';
+import 'package:goutu/models/user.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
 final List<Places> places = <Places>[
-  Places(entries: 'Jardin Botanico', km: '1.5km', price: 'DOP 95', image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
+  Places(
+      entries: 'Jardin Botanico',
+      km: '1.5km',
+      price: 'DOP 95',
+      image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
+
   Places(entries: 'Marbella', km: '2.5km', price: 'DOP 120', image: "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"),
   Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
 ];
 
+final List<List<double>> polylinesarr = [
+  [18.472425, -69.926299],
+  [18.470187, -69.931642],
+  [18.468640, -69.926063]
+];
+
+final polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
+
+/*
+final Map<PolylineId,Polyline> poli = {
+  PolylineId('a'): Polyline(points: [
+    LatLng(-69.95902, 18.5111),
+    LatLng(-69.95823, 18.50218),
+    LatLng(-69.92782, 18.45126)],
+      polylineId: PolylineId('a'),
+  ),
+};
+*/
+
 class NewHomePage extends StatefulWidget {
-  const NewHomePage({Key? key}) : super(key: key);
+  final User user;
+  const NewHomePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _NewHomePage createState() => _NewHomePage();
@@ -35,7 +64,7 @@ class _NewHomePage extends State<NewHomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MapSample()));
+                          builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
                 },
                 child: Image.asset(
                   'images/tempsnip.png',
@@ -100,7 +129,7 @@ class _NewHomePage extends State<NewHomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const MapSample()));
+                                    builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
                           },
                           child: Row(
                             children: [
@@ -167,7 +196,6 @@ class _NewHomePage extends State<NewHomePage> {
                                 onTap: () async {
 
                                   //Add likes
-
 
                                 },
                                 child: Container(

@@ -7,19 +7,21 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:goutu/src/views/map_home_page.dart';
 
-class LoginPage extends StatefulWidget{
+class ChangePass extends StatefulWidget{
   static String identifier = 'loginPage';
-  const LoginPage({Key? key}) : super(key: key);
+  final User user;
+  const ChangePass({Key? key, required this.user}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _ChangePass createState() => _ChangePass();
 }
-final uController = TextEditingController();
+final oController = TextEditingController();
 final pController = TextEditingController();
+final cpController = TextEditingController();
 
 final List<LatLng> poli = <LatLng>[];
 
-class _LoginPageState extends State<LoginPage> {
+class _ChangePass extends State<ChangePass> {
   final myController = TextEditingController();
 
   @override
@@ -27,25 +29,20 @@ class _LoginPageState extends State<LoginPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Login Page'),
+          title: const Text('Change Passwords'),
           backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
         ),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Flexible(
-                child: Image.asset('images/logo.png',
-                  height: 400,
-                  width: 300,
-                  alignment: Alignment.bottomCenter,
-                ),
-              ),
               _usernameText(),
               const SizedBox(height: 30, width: 100,),
               _passwordText(),
               const SizedBox(height: 30, width: 100,),
-              _loginButton(),
+              _confirmPass(),
+              const SizedBox(height: 30, width: 100,),
+              _ChangeButton(widget.user),
               const SizedBox(height: 50, width: 100,),
             ],
           ),
@@ -62,7 +59,7 @@ StatefulWidget _usernameText(){
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: TextField(
-            controller: uController,
+            controller: oController,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
                 color: Colors.white
@@ -75,9 +72,9 @@ StatefulWidget _usernameText(){
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white)
               ),
-              hintText: 'example@gmail.com',
+              hintText: 'Old Password',
               hintStyle: TextStyle(color: Colors.white),
-              labelText: 'Email Address',
+              labelText: 'Old Password',
               labelStyle: TextStyle(color: Colors.white),
             ),
           ),
@@ -97,7 +94,7 @@ StatefulWidget _passwordText(){
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
             style: const TextStyle(
-              color: Colors.white
+                color: Colors.white
             ),
             decoration: const InputDecoration(
                 icon: Icon(
@@ -105,11 +102,11 @@ StatefulWidget _passwordText(){
                   color: Colors.white,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white)
+                    borderSide: BorderSide(color: Colors.white)
                 ),
-                hintText: 'Password',
+                hintText: 'New Password',
                 hintStyle: TextStyle(color: Colors.white),
-                labelText: 'Password',
+                labelText: 'New Password',
                 labelStyle: TextStyle(color: Colors.white)
             ),
           ),
@@ -118,25 +115,52 @@ StatefulWidget _passwordText(){
   );
 }
 
-StatefulWidget _loginButton(){
+StatefulWidget _confirmPass(){
+  return StreamBuilder(
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            controller: cpController,
+            keyboardType: TextInputType.emailAddress,
+            style: TextStyle(
+                color: Colors.white
+            ),
+            decoration: InputDecoration(
+              icon: Icon(
+                Icons.email,
+                color: Colors.white,
+              ),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white)
+              ),
+              hintText: 'Confirm Password',
+              hintStyle: TextStyle(color: Colors.white),
+              labelText: 'Confirm Password',
+              labelStyle: TextStyle(color: Colors.white),
+            ),
+          ),
+        );
+      }
+  );
+}
+
+StatefulWidget _ChangeButton(User user){
   return StreamBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return ElevatedButton(
           onPressed: () async {
 
-            Map<String, String> usr =  {
-              'username': uController.text,
-              'password': pController.text
+            Map<String, String> passwords =  {
+              'old_password': oController.text,
+              'new_password': pController.text
             };
-            final user = User.fromJson(usr);
-            final  res = await loginUser(user);
+            final  res = await changePasswords(passwords,user.username!);
 
             if(res.statusCode == 200){
-
-              User userLog = userFromJson(res.body);
               Navigator.pushAndRemoveUntil(
                 context, MaterialPageRoute(builder: (context) =>
-                  MapSample(poly: poli, user: userLog)),
+                  MapSample(poly: poli, user: user)),
                 ModalRoute.withName('/'),
               );
             };

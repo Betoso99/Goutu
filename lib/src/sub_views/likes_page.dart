@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
+import 'package:goutu/models/user.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
@@ -10,8 +11,17 @@ final List<Places> places = <Places>[
   Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
 ];
 
+final List<List<double>> polylinesarr = [
+  [18.472425, -69.926299],
+  [18.470187, -69.931642],
+  [18.468640, -69.926063]
+];
+
+final polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
+
 class LikesPage extends StatefulWidget {
-  const LikesPage({Key? key}) : super(key: key);
+  final User user;
+  const LikesPage({Key? key, required this.user}) : super(key: key);
 
   @override
   _LikesPage createState() => _LikesPage();
@@ -33,7 +43,7 @@ class _LikesPage extends State<LikesPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const MapSample()));
+                            builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
                   },
                   child: Image.asset(
                     'images/tempsnip.png',
@@ -58,7 +68,6 @@ class _LikesPage extends State<LikesPage> {
                       setState(() {});
                       return;
                     }
-
                   },
                   decoration: InputDecoration(
                     icon: Container(
@@ -127,7 +136,7 @@ class _LikesPage extends State<LikesPage> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const MapSample()));
+                                                     MapSample(poly: polylinesdef, user: widget.user,)));
                                       },
                                       child: Container(
                                         child: const Icon(

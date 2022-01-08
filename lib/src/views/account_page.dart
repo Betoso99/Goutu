@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/models/user.dart';
+import 'package:goutu/src/controllers/user_controller.dart';
 import 'package:goutu/src/views/home_page.dart';
 
+import 'change_pass_page.dart';
+
 class AccountPage extends StatefulWidget {
+  final User user;
   static String identifier = 'loginPage';
 
-  const AccountPage({Key? key}) : super(key: key);
+  const AccountPage({Key? key, required this.user}) : super(key: key);
 
   @override
   _AccountPage createState() => _AccountPage();
@@ -42,11 +47,19 @@ class _AccountPage extends State<AccountPage> {
                     horizontal: leftpad,
                   ),
                 ),
-                const Text(
-                  "Contraseñas",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChangePass(user: widget.user,))
+                    );
+                  },
+                  child: const Text(
+                    "Cambiar Contraseña",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
                   ),
                 )
               ],
@@ -90,8 +103,20 @@ class _AccountPage extends State<AccountPage> {
                                       children: [
                                         ElevatedButton(
                                           child: const Text('Si'),
-                                          onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), ModalRoute.withName('/'),
-                                          ),
+                                          onPressed: () async {
+                                            Map<String, String?> usr =  {
+                                              'username': widget.user.username,
+                                            };
+                                            final  res = await logoutUser(User.fromJson(usr));
+                                            if(res.statusCode == 200) {
+                                              Navigator.pushAndRemoveUntil(
+                                                context, MaterialPageRoute(
+                                                  builder: (
+                                                      context) => const HomePage()),
+                                                ModalRoute.withName('/'),
+                                              );
+                                            }
+                                          }
                                         ),
                                         const SizedBox(width: 10),
                                         ElevatedButton(

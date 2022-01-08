@@ -1,3 +1,6 @@
+
+
+
 class Places {
   String? entries;
   String? km;
@@ -9,3 +12,12 @@ class Places {
 }
 
 
+/*List<User> allUserFromJson(String str) {
+  final jsonData = json.decode(str);
+  return List<User>.from(jsonData.map((x) => User.fromJson(x)));
+}
+
+String allUserToJson(List<User> data) {
+  final dyn = List<dynamic>.from(data.map((x) => x.toJson()));
+  return json.encode(dyn);
+}*/

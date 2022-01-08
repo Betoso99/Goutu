@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:goutu/models/user.dart';
 import 'package:goutu/src/views/account_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
+final List<LatLng> poli = <LatLng>[];
+
 class ProfilePage extends StatefulWidget {
+  final User user;
   static String identifier = 'loginPage';
 
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _ProfilePage createState() => _ProfilePage();
@@ -27,7 +32,7 @@ class _ProfilePage extends State<ProfilePage> {
                 onTap: () async {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const MapSample())
+                      MaterialPageRoute(builder: (context) => MapSample(poly: poli, user: widget.user,))
                   );
                 },
                 //child: Flexible(
@@ -65,14 +70,15 @@ class _ProfilePage extends State<ProfilePage> {
                 ),
                 SizedBox(width: space),
                 Column(
-                  children: const [
+                  children: [
                     Text(
-                      "Alberto Osorio",
+                      widget.user.first_name!+" "+ widget.user.last_name!,
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
+                    const SizedBox(height: 5),
                     Text(
-                      "829-703-2220",
-                      style: TextStyle(color: Colors.white),
+                      '@'+widget.user.username!,
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
                     )
                   ],
                 )
@@ -89,7 +95,7 @@ class _ProfilePage extends State<ProfilePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AccountPage()));
+                        builder: (context) => AccountPage(user: widget.user,)));
               },
               child: Row(
                 children: [

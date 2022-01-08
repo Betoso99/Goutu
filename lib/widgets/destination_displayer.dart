@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/models/user.dart';
 import 'package:goutu/src/sub_views/new_home_page.dart';
 import 'package:goutu/src/views/tabbed_page.dart';
 
 class Display extends StatelessWidget {
-  const Display({Key? key}) : super(key: key);
+  final User user;
+  const Display({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +13,7 @@ class Display extends StatelessWidget {
       onVerticalDragUpdate: (DragUpdateDetails drag) {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const Tabbed())
+            MaterialPageRoute(builder: (context) => Tabbed(user: user,))
         );
       },
         child: DraggableScrollableSheet(
@@ -44,7 +46,7 @@ class Display extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>  const Tabbed() // Tener en cuenta
+                                builder: (context) =>  Tabbed(user: user,) // Tener en cuenta
                             ),
                           );
                         },

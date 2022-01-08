@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/models/user.dart';
+import 'package:goutu/src/controllers/user_controller.dart';
 import 'package:goutu/src/views/home_page.dart';
 
 class RegisterPage extends StatefulWidget{
@@ -8,6 +10,12 @@ class RegisterPage extends StatefulWidget{
   @override
   _RegisterPage createState() => _RegisterPage();
 }
+
+final uController = TextEditingController();
+final pController = TextEditingController();
+final fnController = TextEditingController();
+final lnController = TextEditingController();
+final cpController = TextEditingController();
 
 class _RegisterPage extends State<RegisterPage> {
   @override
@@ -29,6 +37,11 @@ class _RegisterPage extends State<RegisterPage> {
                   alignment: Alignment.bottomCenter,
                 ),
               ),
+
+              _firstNameText(),
+              const SizedBox(height: 30, width: 100,),
+              _lastNameText(),
+              const SizedBox(height: 30, width: 100,),
               _usernameText(),
               const SizedBox(height: 30, width: 100,),
               _passwordText(),
@@ -46,12 +59,73 @@ class _RegisterPage extends State<RegisterPage> {
   }
 }
 
+StatefulWidget _firstNameText(){
+  return StreamBuilder(
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            controller: fnController,
+            keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(
+                color: Colors.white
+            ),
+            decoration: const InputDecoration(
+                icon: Icon(
+                  Icons.email,
+                  color: Colors.white,
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)
+                ),
+                hintText: 'Juan',
+                hintStyle: TextStyle(color: Colors.white),
+                labelText: 'First Name',
+                labelStyle: TextStyle(color: Colors.white)
+            ),
+          ),
+        );
+      }
+  );
+}
+
+StatefulWidget _lastNameText(){
+  return StreamBuilder(
+      builder: (BuildContext context, AsyncSnapshot snapshot){
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: TextField(
+            controller: lnController,
+            keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(
+                color: Colors.white
+            ),
+            decoration: const InputDecoration(
+                icon: Icon(
+                  Icons.email,
+                  color: Colors.white,
+                ),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)
+                ),
+                hintText: 'Perez',
+                hintStyle: TextStyle(color: Colors.white),
+                labelText: 'Last Name',
+                labelStyle: TextStyle(color: Colors.white)
+            ),
+          ),
+        );
+      }
+  );
+}
+
 StatefulWidget _usernameText(){
   return StreamBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: const TextField(
+          child: TextField(
+            controller: uController,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
                 color: Colors.white
@@ -80,7 +154,8 @@ StatefulWidget _passwordText(){
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: const TextField(
+          child: TextField(
+            controller: pController,
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
@@ -111,7 +186,8 @@ StatefulWidget _confirmPasswordText(){
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: const TextField(
+          child:  TextField(
+            controller: cpController,
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
@@ -141,8 +217,23 @@ StatefulWidget _registerButton(){
   return StreamBuilder(
       builder: (BuildContext context, AsyncSnapshot snapshot){
         return ElevatedButton(
-          onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), ModalRoute.withName('/'),
-          ),
+          onPressed: () async {
+            Map<String, String> usr =  {
+              "first_name": fnController.text,
+              "last_name": lnController.text,
+              'username': uController.text,
+              'password': pController.text,
+              "confirm_password": cpController.text,
+            };
+            final  res = await createUser(User.fromJson(usr));
+
+            if(res == 201) {
+              Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
+                ModalRoute.withName('/'),
+              );
+            }
+            },
           style: ElevatedButton.styleFrom(
               primary: const Color.fromRGBO(255, 80, 47, 1.0)
           ),
