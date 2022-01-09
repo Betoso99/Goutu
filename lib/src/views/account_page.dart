@@ -155,13 +155,69 @@ class _AccountPage extends State<AccountPage> {
                     horizontal: leftpad,
                   ),
                 ),
-                const Text(
-                  "Eliminar Cuenta",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.red,
-                  ),
-                )
+                GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                            height: 200,
+                            color: Colors.red,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const Text(
+                                    'Seguro Quiere Eliminar su Cuenta?',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 110),
+                                    child: Row(
+                                      children: [
+                                        ElevatedButton(
+                                            child: const Text('Si'),
+                                            onPressed: () async {
+                                              Map<String, String?> usr =  {
+                                                'username': widget.user.username,
+                                              };
+                                              final  res = await logoutUser(User.fromJson(usr));
+                                              if(res.statusCode == 200) {
+                                                Navigator.pushAndRemoveUntil(
+                                                  context, MaterialPageRoute(
+                                                    builder: (
+                                                        context) => const HomePage()),
+                                                  ModalRoute.withName('/'),
+                                                );
+                                              }
+                                            }
+                                        ),
+                                        const SizedBox(width: 10),
+                                        ElevatedButton(
+                                          child: const Text('No'),
+                                          onPressed: () => Navigator.pop(context),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      "Eliminar Cuenta",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.red,
+                      ),
+                    ))
               ],
             ),
             SizedBox(height: space),

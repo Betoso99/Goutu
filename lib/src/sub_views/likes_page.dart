@@ -5,11 +5,13 @@ import 'package:goutu/models/user.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
-final List<Places> places = <Places>[
+/*final List<Places> places = <Places>[
   Places(entries: 'Jardin Botanico', km: '1.5km', price: 'DOP 95', image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
   Places(entries: 'Marbella', km: '2.5km', price: 'DOP 120', image: "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"),
   Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
-];
+];*/
+
+final List<Places> places = <Places>[];
 
 final List<List<double>> polylinesarr = [
   [18.472425, -69.926299],
@@ -29,6 +31,10 @@ class LikesPage extends StatefulWidget {
 
 class _LikesPage extends State<LikesPage> {
   @override
+  void initState(){
+    super.initState();
+
+  }
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -112,7 +118,7 @@ class _LikesPage extends State<LikesPage> {
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   fit: BoxFit.fill,
-                                  image: NetworkImage(places[index].image.toString()),
+                                  image: NetworkImage(places[index].id.toString()),
                                 ),
                               ),
                             ),
@@ -122,7 +128,7 @@ class _LikesPage extends State<LikesPage> {
                               children: [
                                 const SizedBox(height: 20),
                                 Text(
-                                  places[index].entries.toString(),
+                                  places[index].name.toString(),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 const SizedBox(height: 10),

@@ -1,23 +1,45 @@
+import 'dart:convert';
 
+Places placesFromJson(String str) {
+  final jsonData = json.decode(str);
+  return Places.fromJson(jsonData);
+}
 
+String placesToJson(Places data) {
+  final dyn = data.toJson();
+  return json.encode(dyn);
+}
 
 class Places {
-  String? entries;
-  String? km;
+  String? id;
+  String? name;
+  String? description;
   String? price;
-  String? image;
-  int? transferNum;
+  int? province;
+  int? transport_type;
+  int? organization;
 
-  Places({this.entries, this.km, this.price, this.image, this.transferNum});
+  Places({this.id, this.name, this.description, this.price, this.province, this.transport_type, this.organization});
+
+  factory Places.fromJson(Map<String, dynamic> json) => Places(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      price: json['price'],
+      province: json['province'],
+      transport_type: json['transport_type'],
+      organization: json['organization'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "description": description,
+    "price": price,
+    "province": province,
+    "transport_type": transport_type,
+    "organization": organization,
+  };
+
 }
 
-
-/*List<User> allUserFromJson(String str) {
-  final jsonData = json.decode(str);
-  return List<User>.from(jsonData.map((x) => User.fromJson(x)));
-}
-
-String allUserToJson(List<User> data) {
-  final dyn = List<dynamic>.from(data.map((x) => x.toJson()));
-  return json.encode(dyn);
-}*/

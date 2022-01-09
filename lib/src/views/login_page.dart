@@ -64,10 +64,10 @@ StatefulWidget _usernameText(){
           child: TextField(
             controller: uController,
             keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white
             ),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               icon: Icon(
                 Icons.email,
                 color: Colors.white,

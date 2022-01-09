@@ -1,24 +1,25 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
-import 'package:goutu/models/list_pages.dart';
 import 'package:goutu/models/user.dart';
+import 'package:goutu/src/controllers/trip_controller.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
-final List<Places> places = <Places>[
+/*final List<Places> places = <Places>[
   Places(
       entries: 'Jardin Botanico',
       km: '1.5km',
       price: 'DOP 95',
-      image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
+      image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"
+  ),
 
   Places(entries: 'Marbella', km: '2.5km', price: 'DOP 120', image: "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"),
   Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
-];
+];*/
+
+final List<Places> places = <Places>[];
 
 final List<List<double>> polylinesarr = [
   [18.472425, -69.926299],
@@ -27,17 +28,6 @@ final List<List<double>> polylinesarr = [
 ];
 
 final polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
-
-/*
-final Map<PolylineId,Polyline> poli = {
-  PolylineId('a'): Polyline(points: [
-    LatLng(-69.95902, 18.5111),
-    LatLng(-69.95823, 18.50218),
-    LatLng(-69.92782, 18.45126)],
-      polylineId: PolylineId('a'),
-  ),
-};
-*/
 
 class NewHomePage extends StatefulWidget {
   final User user;
@@ -48,8 +38,12 @@ class NewHomePage extends StatefulWidget {
 }
 
 class _NewHomePage extends State<NewHomePage> {
-
   @override
+  void initState(){
+    super.initState();
+    var list = getAllRoute();
+    print(list);
+  }
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -140,7 +134,7 @@ class _NewHomePage extends State<NewHomePage> {
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(places[index].image.toString()),
+                                    image: NetworkImage(places[index].id.toString()),
                                   ),
                                 ),
                               ),
@@ -150,12 +144,12 @@ class _NewHomePage extends State<NewHomePage> {
                                 children: [
                                   const SizedBox(height: 20),
                                   Text(
-                                    places[index].entries.toString(),
+                                    places[index].name.toString(),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
-                                    places[index].km.toString(),
+                                    places[index].description.toString(),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                   Text(

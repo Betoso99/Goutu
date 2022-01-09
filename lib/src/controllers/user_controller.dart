@@ -9,19 +9,13 @@ String username = 'arielangeles';
 String password = '321angeles';
 String basicAuth = 'Basic ' + base64Encode(utf8.encode('$username:$password'));
 
-/*Future<List<User>> getAllPosts() async {
-  final response = await http.get(Uri.https(url,'/'));
-  print(response.body);
-  return allUserFromJson(response.body);
-}*/
-
 Future<http.Response> loginUser(User usr) async{
   final response = await http.post(Uri.parse(url+'/login/'),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader : basicAuth
       },
-      body: ToJson(usr)
+      body: userToJson(usr)
   );
   return response;
 }
@@ -32,7 +26,18 @@ Future<http.Response> logoutUser(User usr) async{
         HttpHeaders.contentTypeHeader: 'application/json',
         HttpHeaders.authorizationHeader : basicAuth
       },
-      body: ToJson(usr)
+      body: userToJson(usr)
+  );
+  return response;
+}
+
+Future<http.Response> eraseUser(User usr) async{
+  final response = await http.post(Uri.parse(url+'/logout/'),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader : basicAuth
+      },
+      body: userToJson(usr)
   );
   return response;
 }
@@ -56,12 +61,5 @@ Future<http.Response> changePasswords(Map<String, String> body, String username)
       },
       body: json.encode(body)
   );
-  print(response.body);
-  print('-------------------');
-  print(response.statusCode);
-  print('-------------------');
-  print(body);
-  print('-------------------');
-  print(json.encode(body));
   return response;
 }

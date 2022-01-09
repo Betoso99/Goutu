@@ -1,11 +1,19 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:goutu/models/places.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
+import 'package:goutu/src/views/tabbed_page.dart';
 import 'package:goutu/widgets/destination_displayer.dart';
+
+final List<Places> places = <Places>[
+  Places(price: '841',description: 'Un buen lugar',name: 'Mi casa'),
+  Places(price: '987',description: 'Un mal lugar',name: 'Tu casa'),
+];
 
 class MapSample extends StatefulWidget {
   //final Map<PolylineId,Polyline> poly;
@@ -28,7 +36,7 @@ class MapSampleState extends State<MapSample> {
   //final Location location = Location();
   final Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
+  static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(18.472346, -69.918128),
     zoom: 16,
   );
@@ -38,26 +46,17 @@ class MapSampleState extends State<MapSample> {
       zoom: 16
   );
 
-
-// this set will hold my markers
   //Set<Marker> _markers = {};
-
-// this will hold the generated polylines
   Set<Polyline> _polylines = {};
-
-// this will hold each polyline coordinate as Lat and Lng pairs
   List<LatLng> polylineCoordinates = [];
-
-// this is the key object - the PolylinePoints
-// which generates every polyline between start and finish
   PolylinePoints polylinePoints = PolylinePoints();
-
-// for my custom icons
- /* BitmapDescriptor sourceIcon;
+  /* BitmapDescriptor sourceIcon;
   BitmapDescriptor destinationIcon;*/
+  double _percent = 0.0;
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home Page"),
@@ -90,49 +89,163 @@ class MapSampleState extends State<MapSample> {
           )
         ],
       ),
-      body: Stack(
-        children: <Widget> [
-          GoogleMap(
-            myLocationEnabled: true,
-            mapType: MapType.normal,
-            initialCameraPosition: _kGooglePlex,
-            onMapCreated: (GoogleMapController controller) async {
-              _controller.complete(controller);
-              LocationPermission permission = await Geolocator.requestPermission();
-              setPolylines();
-              },
-            polylines: _polylines,
-            mapToolbarEnabled: true,
-            buildingsEnabled: true,
-            compassEnabled: true,
-            myLocationButtonEnabled: true,
+      body: SafeArea(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  bottom: MediaQuery.of(context).size.height * 0.26,
+                  child: GoogleMap(
+                      myLocationEnabled: true,
+                      mapType: MapType.normal,
+                      initialCameraPosition: _kGooglePlex,
+                      onMapCreated: (GoogleMapController controller) async {
+                        _controller.complete(controller);
+                        LocationPermission permission = await Geolocator.requestPermission();
+                        setPolylines();
+                      },
+                      polylines: _polylines,
+                      mapToolbarEnabled: true,
+                      buildingsEnabled: true,
+                      compassEnabled: true,
+                      myLocationButtonEnabled: true,
+                    ),
+                ),
+                Positioned.fill(
+                  child: NotificationListener<DraggableScrollableNotification>(
+                    onNotification: (notification) {
+                      print(notification.extent);
+                      setState(() {
+                        _percent = 2 * notification.extent - 0.6;
+                      });
+                      return true;
+                    },
+                    child: DraggableScrollableSheet(
+                      maxChildSize: 0.8,
+                      minChildSize: 0.3,
+                      initialChildSize: 0.3,
+                      builder: (_, controller) {
+                        return Material(
+                          elevation: 10,
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                          color: const Color.fromRGBO(16, 16, 20, 1),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Container(
+                                      width: 40,
+                                      color: Colors.white,
+                                      height: 2,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Expanded(
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.all(15),
+                                    itemCount: places.length,
+                                    controller: controller,
+                                    itemBuilder: (BuildContext context, int index,) {
+                                      return Column(
+                                        children: [
+                                          Container(
+                                            height: 80,
+                                            color: Colors.white12,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    /*Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
+                                              */},
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                        width: 80,
+                                                        child: const Icon(Icons.location_on_outlined, color: Colors.white,),
+                                                      ),
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Text(
+                                                            places[index].name.toString(),
+                                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                          ),
+                                                          const SizedBox(height: 5),
+                                                          Text(
+                                                            places[index].description.toString(),
+                                                            style: const TextStyle(color: Colors.white),
+                                                          ),
+                                                          Text(
+                                                            'DOP\$ '+places[index].price.toString(),
+                                                            style: const TextStyle(color: Colors.white),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5,)
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: -170 * (1 - _percent),
+                  child: Opacity(
+                    opacity: _percent,
+                    child: _SearchDestination(),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: -50 * (1 - _percent),
+                  child: Opacity(
+                    opacity: _percent,
+                    child: _goTabbed(user: widget.user,),
+                  ),
+                ),
+                /*Visibility(
+                    child: Display(user: widget.user,)
+                ),*/
+              ],
+            ),
           ),
-          Visibility(
-              child: Display(user: widget.user,)
-          ),
-        ],
-      ),
-        floatingActionButton: Align(
-          alignment: const Alignment(1, 0.65),
-          child: FloatingActionButton(
-            onPressed: (){
-              getLocation();
-              _goToMe();
-            },
-            child: const Icon(Icons.my_location),
-          ),
-        )
     );
   }
 
   setPolylines() async {
-
     setState(() {
       // create a Polyline instance
       // with an id, an RGB color and the list of LatLng pairs
       Polyline polyline = Polyline(
-          polylineId: PolylineId("poly"),
-          color: Color.fromARGB(255, 40, 122, 198),
+          polylineId: const PolylineId("poly"),
+          color: const Color.fromARGB(255, 40, 122, 198),
           width: 5,
           points: widget.poly
       );
@@ -147,5 +260,142 @@ class MapSampleState extends State<MapSample> {
   Future<void> _goToMe() async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_MyLoc));
+  }
+}
+
+class _goTabbed extends StatelessWidget {
+  final User user;
+  const _goTabbed({Key? key, required this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+            builder: (context) =>  Tabbed(user: user,))// Tener en cuenta
+        );
+      },
+      child: Material(
+        color: const Color.fromRGBO(255, 80, 47, 1.0),
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.place_sharp, color: Colors.white),
+              SizedBox(width: 10),
+              Text('Ver sugerencias', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchDestination extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 10,
+      color: Color.fromRGBO(16, 16, 20, 1),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: const [
+              BackButton(color: Colors.white,),
+              Text(
+                'Choose destination',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ],
+          ),
+          Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+              child: Column(
+                children: [
+                  Container(
+                    height: 35,
+                    alignment: Alignment.center,
+                    child: TextField(
+                      onTap: () async {
+                        /*Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>  Tabbed(user: user,) // Tener en cuenta
+                            ),
+                          );*/
+                      },
+                      //controller: fromController,
+                      decoration: InputDecoration(
+                        icon: Container(
+                          margin: const EdgeInsets.only(left: 20, bottom: 15),
+                          width: 10,
+                          height: 10,
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.white54,
+                          ),
+                        ),
+                        hintText: "From where?",
+                        hintStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Container(
+                    height: 35,
+                    child: TextField(
+                      onTap: () async {
+                        /*Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>  Tabbed(user: user,) // Tener en cuenta
+                            ),
+                          );*/
+                      },
+                      //controller: toController,
+                      decoration: InputDecoration(
+                        icon: Container(
+                          margin: const EdgeInsets.only(left: 20, bottom: 15),
+                          width: 10,
+                          height: 10,
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.white54,
+                          ),
+                        ),
+                        hintText: "To where?",
+                        hintStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              )
+          ),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
   }
 }

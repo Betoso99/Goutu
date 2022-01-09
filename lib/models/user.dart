@@ -10,11 +10,6 @@ String userToJson(User data) {
   return json.encode(dyn);
 }
 
-String ToJson(User data) {
-  final dyn = data.toJson();
-  return json.encode(dyn);
-}
-
 class User {
   String? username;
   String? password;

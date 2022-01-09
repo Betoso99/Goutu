@@ -27,17 +27,13 @@ class _RegisterPage extends State<RegisterPage> {
           backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+          child: ListView(
             children: [
-              Flexible(
-                child: Image.asset('images/logo.png',
-                  height: 400,
-                  width: 300,
-                  alignment: Alignment.bottomCenter,
-                ),
+              Image.asset('images/logo.png',
+                height: 250,
+                width: 300,
+                alignment: Alignment.bottomCenter,
               ),
-
               _firstNameText(),
               const SizedBox(height: 30, width: 100,),
               _lastNameText(),
@@ -48,7 +44,10 @@ class _RegisterPage extends State<RegisterPage> {
               const SizedBox(height: 30, width: 100,),
               _confirmPasswordText(),
               const SizedBox(height: 30, width: 100,),
-              _registerButton(),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal : 20.0),
+                  child: _registerButton()
+              ),
               const SizedBox(height: 50, width: 100,),
             ],
           ),
@@ -72,7 +71,7 @@ StatefulWidget _firstNameText(){
             ),
             decoration: const InputDecoration(
                 icon: Icon(
-                  Icons.email,
+                  Icons.person,
                   color: Colors.white,
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -102,7 +101,7 @@ StatefulWidget _lastNameText(){
             ),
             decoration: const InputDecoration(
                 icon: Icon(
-                  Icons.email,
+                  Icons.person,
                   color: Colors.white,
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -127,20 +126,20 @@ StatefulWidget _usernameText(){
           child: TextField(
             controller: uController,
             keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white
             ),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 icon: Icon(
-                  Icons.email,
+                  Icons.contact_mail,
                   color: Colors.white,
                 ),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.white)
                 ),
-                hintText: 'example@gmail.com',
+                hintText: 'jperez',
                 hintStyle: TextStyle(color: Colors.white),
-                labelText: 'Email Address',
+                labelText: 'Username',
                 labelStyle: TextStyle(color: Colors.white)
             ),
           ),
@@ -159,10 +158,10 @@ StatefulWidget _passwordText(){
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white
             ),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 icon: Icon(
                   Icons.lock,
                   color: Colors.white,
@@ -191,10 +190,10 @@ StatefulWidget _confirmPasswordText(){
             cursorColor: Colors.white,
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white
             ),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 icon: Icon(
                   Icons.lock,
                   color: Colors.white,
