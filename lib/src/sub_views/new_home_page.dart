@@ -41,8 +41,8 @@ class _NewHomePage extends State<NewHomePage> {
   @override
   void initState(){
     super.initState();
-    var list = getAllRoute();
-    print(list);
+    //var list = getAllRoutes();
+    //print(list);
   }
   Widget build(BuildContext context) {
     return SafeArea(

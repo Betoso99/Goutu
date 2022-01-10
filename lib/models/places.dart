@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 Places placesFromJson(String str) {
   final jsonData = json.decode(str);
   return Places.fromJson(jsonData);
@@ -11,15 +13,16 @@ String placesToJson(Places data) {
 }
 
 class Places {
-  String? id;
+  int? id;
   String? name;
   String? description;
   String? price;
   int? province;
   int? transport_type;
   int? organization;
+  List<LatLng>? route_coordinates;
 
-  Places({this.id, this.name, this.description, this.price, this.province, this.transport_type, this.organization});
+  Places({this.id, this.name, this.description, this.price, this.province, this.transport_type, this.organization, this.route_coordinates});
 
   factory Places.fromJson(Map<String, dynamic> json) => Places(
       id: json['id'],
@@ -29,6 +32,7 @@ class Places {
       province: json['province'],
       transport_type: json['transport_type'],
       organization: json['organization'],
+      route_coordinates: json['route_coordinates']
   );
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +43,7 @@ class Places {
     "province": province,
     "transport_type": transport_type,
     "organization": organization,
+    "route_coordinates": route_coordinates
   };
 
 }

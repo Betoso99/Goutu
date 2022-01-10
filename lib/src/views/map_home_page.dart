@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -6,20 +7,34 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
 import 'package:goutu/models/user.dart';
+import 'package:goutu/src/controllers/trip_controller.dart';
+import 'package:goutu/src/sub_views/likes_page.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/src/views/tabbed_page.dart';
-import 'package:goutu/widgets/destination_displayer.dart';
 
-final List<Places> places = <Places>[
-  Places(price: '841',description: 'Un buen lugar',name: 'Mi casa'),
-  Places(price: '987',description: 'Un mal lugar',name: 'Tu casa'),
+final toController = TextEditingController();
+final fromController = TextEditingController();
+
+List<Places> places = <Places>[
+  /*Places(price: '841',description: 'Un buen lugar',name: 'Mi casa'),
+  Places(price: '987',description: 'Un mal lugar',name: 'Tu casa'),*/
 ];
+
+List<List<double>> polylinesarr = [
+/*  [18.472425, -69.926299],
+  [18.470187, -69.931642],
+  [18.468640, -69.926063]*/
+];
+
+var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
 
 class MapSample extends StatefulWidget {
   //final Map<PolylineId,Polyline> poly;
   final List<LatLng> poly;
   final User user;
   const MapSample({Key? key, required this.poly, required this.user}) : super(key: key);
+
+
 
   @override
   State<MapSample> createState() => MapSampleState();
@@ -31,8 +46,30 @@ void getLocation() async {
   lat = position.latitude;
   lon = position.longitude;
 }
+List<Places> items = <Places>[];
 
 class MapSampleState extends State<MapSample> {
+
+  void getPlacesData () async{
+    var body = await getAllRoutes();
+    places = json.decode(body.body).map<Places>((value) => Places.fromJson(value)).toList();
+    setState(() {    items = places;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if(widget.poly.isNotEmpty){
+      polylinesdef = widget.poly;
+    }
+
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) {getPlacesData();
+        });
+    setState(() {});
+  }
   //final Location location = Location();
   final Completer<GoogleMapController> _controller = Completer();
 
@@ -54,6 +91,29 @@ class MapSampleState extends State<MapSample> {
   BitmapDescriptor destinationIcon;*/
   double _percent = 0.0;
 
+  void filterSearchResults(String query) {
+    List<Places>? dummySearchList = <Places>[];
+    dummySearchList.addAll(places);
+    if(query.isNotEmpty) {
+      List<Places>? dummyListData = <Places>[];
+      dummySearchList.forEach((item) {
+        if(item.name!.toLowerCase().contains(query.toLowerCase())) {
+          dummyListData.add(item);
+        }
+      });
+      setState(() {
+        items.clear();
+        items.addAll(dummyListData);
+      });
+      return;
+    }
+    else {
+      setState(() {
+        items.clear();
+        items.addAll(places);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -113,7 +173,9 @@ class MapSampleState extends State<MapSample> {
                 Positioned.fill(
                   child: NotificationListener<DraggableScrollableNotification>(
                     onNotification: (notification) {
-                      print(notification.extent);
+/*                      print(notification.extent);
+                      print(places);
+                      print(items);*/
                       setState(() {
                         _percent = 2 * notification.extent - 0.6;
                       });
@@ -123,7 +185,7 @@ class MapSampleState extends State<MapSample> {
                       maxChildSize: 0.8,
                       minChildSize: 0.3,
                       initialChildSize: 0.3,
-                      builder: (_, controller) {
+                      builder: (context,controller) {
                         return Material(
                           elevation: 10,
                           borderRadius: const BorderRadius.vertical(
@@ -149,7 +211,7 @@ class MapSampleState extends State<MapSample> {
                                 Expanded(
                                   child: ListView.builder(
                                     padding: const EdgeInsets.all(15),
-                                    itemCount: places.length,
+                                    itemCount: items.length,
                                     controller: controller,
                                     itemBuilder: (BuildContext context, int index,) {
                                       return Column(
@@ -162,38 +224,40 @@ class MapSampleState extends State<MapSample> {
                                               children: [
                                                 GestureDetector(
                                                   onTap: () async {
-                                                    /*Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
-                                              */},
+
+                                                    var res = await getRoute(items[index].id!);
+                                                    var tmp = placesFromJson(res.body);
+                                                    polylinesdef = tmp.route_coordinates!;
+                                                    print(polylinesdef);
+
+                                                  },
                                                   child: Row(
-                                                    children: [
-                                                      Container(
-                                                        width: 80,
-                                                        child: const Icon(Icons.location_on_outlined, color: Colors.white,),
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                          Text(
-                                                            places[index].name.toString(),
-                                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                                          ),
-                                                          const SizedBox(height: 5),
-                                                          Text(
-                                                            places[index].description.toString(),
-                                                            style: const TextStyle(color: Colors.white),
-                                                          ),
-                                                          Text(
-                                                            'DOP\$ '+places[index].price.toString(),
-                                                            style: const TextStyle(color: Colors.white),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
+                                                      children: [
+                                                        Container(
+                                                          width: 80,
+                                                          child: const Icon(Icons.location_on_outlined, color: Colors.white,),
+                                                        ),
+                                                        Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            Text(
+                                                              items[index].name.toString(),
+                                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                            ),
+                                                            const SizedBox(height: 5),
+                                                            Text(
+                                                              items[index].description.toString(),
+                                                              style: const TextStyle(color: Colors.white),
+                                                            ),
+                                                            Text(
+                                                              'DOP\$ '+items[index].price.toString(),
+                                                              style: const TextStyle(color: Colors.white),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
                                                 ),
                                               ],
                                             ),
@@ -218,7 +282,94 @@ class MapSampleState extends State<MapSample> {
                   top: -170 * (1 - _percent),
                   child: Opacity(
                     opacity: _percent,
-                    child: _SearchDestination(),
+                    child: Material(
+                      elevation: 10,
+                      color: Color.fromRGBO(16, 16, 20, 1),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: const [
+                              BackButton(color: Colors.white,),
+                              Text(
+                                'Choose destination',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 35,
+                                    alignment: Alignment.center,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        filterSearchResults(value);
+                                      },
+                                      controller: fromController,
+                                      decoration: InputDecoration(
+                                        icon: Container(
+                                          margin: const EdgeInsets.only(left: 20, bottom: 15),
+                                          width: 10,
+                                          height: 10,
+                                          child: const Icon(
+                                            Icons.location_on,
+                                            color: Colors.white54,
+                                          ),
+                                        ),
+                                        hintText: "From where?",
+                                        hintStyle: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Container(
+                                    height: 35,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        filterSearchResults(value);
+                                      },
+                                      controller: toController,
+                                      decoration: InputDecoration(
+                                        icon: Container(
+                                          margin: const EdgeInsets.only(left: 20, bottom: 15),
+                                          width: 10,
+                                          height: 10,
+                                          child: const Icon(
+                                            Icons.location_on,
+                                            color: Colors.white54,
+                                          ),
+                                        ),
+                                        hintText: "To where?",
+                                        hintStyle: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              )
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
@@ -296,106 +447,3 @@ class _goTabbed extends StatelessWidget {
   }
 }
 
-class _SearchDestination extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 10,
-      color: Color.fromRGBO(16, 16, 20, 1),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: const [
-              BackButton(color: Colors.white,),
-              Text(
-                'Choose destination',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ],
-          ),
-          Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
-              child: Column(
-                children: [
-                  Container(
-                    height: 35,
-                    alignment: Alignment.center,
-                    child: TextField(
-                      onTap: () async {
-                        /*Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>  Tabbed(user: user,) // Tener en cuenta
-                            ),
-                          );*/
-                      },
-                      //controller: fromController,
-                      decoration: InputDecoration(
-                        icon: Container(
-                          margin: const EdgeInsets.only(left: 20, bottom: 15),
-                          width: 10,
-                          height: 10,
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        hintText: "From where?",
-                        hintStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey,
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Container(
-                    height: 35,
-                    child: TextField(
-                      onTap: () async {
-                        /*Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>  Tabbed(user: user,) // Tener en cuenta
-                            ),
-                          );*/
-                      },
-                      //controller: toController,
-                      decoration: InputDecoration(
-                        icon: Container(
-                          margin: const EdgeInsets.only(left: 20, bottom: 15),
-                          width: 10,
-                          height: 10,
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        hintText: "To where?",
-                        hintStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              )
-          ),
-          const SizedBox(height: 10),
-        ],
-      ),
-    );
-  }
-}
