@@ -38,6 +38,7 @@ dependencies:
   geolocator: ^8.0.1
   permission_handler: ^8.3.0
   flutter_polyline_points: ^1.0.0
+  font_awesome_flutter: ^9.2.0
 
 dev_dependencies:
   flutter_test:

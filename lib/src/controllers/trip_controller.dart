@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:goutu/models/places.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,16 +17,17 @@ Future<http.Response> getAllRoutes() async{
         HttpHeaders.authorizationHeader : basicAuth
       },
   );
+  print('----------------------------------------------------------');
+  print(response.body);
   return response;
 }
 
 Future<http.Response> getRoute(int id) async {
-  final response = await http.get(Uri.parse(url+'/$id/'),
+  final response = await http.get(Uri.parse(url+'/$id/coordinates/'),
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader : basicAuth
     },
   );
-  print(response.body);
   return response;
 }

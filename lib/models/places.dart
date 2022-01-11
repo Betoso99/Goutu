@@ -20,7 +20,7 @@ class Places {
   int? province;
   int? transport_type;
   int? organization;
-  List<LatLng>? route_coordinates;
+  List<List<double>>? route_coordinates;
 
   Places({this.id, this.name, this.description, this.price, this.province, this.transport_type, this.organization, this.route_coordinates});
 

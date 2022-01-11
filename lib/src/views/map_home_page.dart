@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
@@ -15,16 +17,9 @@ import 'package:goutu/src/views/tabbed_page.dart';
 final toController = TextEditingController();
 final fromController = TextEditingController();
 
-List<Places> places = <Places>[
-  /*Places(price: '841',description: 'Un buen lugar',name: 'Mi casa'),
-  Places(price: '987',description: 'Un mal lugar',name: 'Tu casa'),*/
-];
+List<Places> places = <Places>[];
 
-List<List<double>> polylinesarr = [
-/*  [18.472425, -69.926299],
-  [18.470187, -69.931642],
-  [18.468640, -69.926063]*/
-];
+List<List<double>> polylinesarr = [];
 
 var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
 
@@ -33,8 +28,6 @@ class MapSample extends StatefulWidget {
   final List<LatLng> poly;
   final User user;
   const MapSample({Key? key, required this.poly, required this.user}) : super(key: key);
-
-
 
   @override
   State<MapSample> createState() => MapSampleState();
@@ -53,8 +46,9 @@ class MapSampleState extends State<MapSample> {
   void getPlacesData () async{
     var body = await getAllRoutes();
     places = json.decode(body.body).map<Places>((value) => Places.fromJson(value)).toList();
-    setState(() {    items = places;
-    });
+    items = places;
+
+    setState(() {});
   }
 
   @override
@@ -68,6 +62,8 @@ class MapSampleState extends State<MapSample> {
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) {getPlacesData();
         });
+    print(places);
+    print(items);
     setState(() {});
   }
   //final Location location = Location();
@@ -161,7 +157,7 @@ class MapSampleState extends State<MapSample> {
                       onMapCreated: (GoogleMapController controller) async {
                         _controller.complete(controller);
                         LocationPermission permission = await Geolocator.requestPermission();
-                        setPolylines();
+                        setPolylines(widget.poly);
                       },
                       polylines: _polylines,
                       mapToolbarEnabled: true,
@@ -173,9 +169,6 @@ class MapSampleState extends State<MapSample> {
                 Positioned.fill(
                   child: NotificationListener<DraggableScrollableNotification>(
                     onNotification: (notification) {
-/*                      print(notification.extent);
-                      print(places);
-                      print(items);*/
                       setState(() {
                         _percent = 2 * notification.extent - 0.6;
                       });
@@ -220,45 +213,64 @@ class MapSampleState extends State<MapSample> {
                                             height: 80,
                                             color: Colors.white12,
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                                               children: [
-                                                GestureDetector(
-                                                  onTap: () async {
-
-                                                    var res = await getRoute(items[index].id!);
-                                                    var tmp = placesFromJson(res.body);
-                                                    polylinesdef = tmp.route_coordinates!;
-                                                    print(polylinesdef);
-
-                                                  },
-                                                  child: Row(
-                                                      children: [
-                                                        Container(
-                                                          width: 80,
-                                                          child: const Icon(Icons.location_on_outlined, color: Colors.white,),
-                                                        ),
-                                                        Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: [
-                                                            Text(
-                                                              items[index].name.toString(),
-                                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                                            ),
-                                                            const SizedBox(height: 5),
-                                                            Text(
-                                                              items[index].description.toString(),
-                                                              style: const TextStyle(color: Colors.white),
-                                                            ),
-                                                            Text(
-                                                              'DOP\$ '+items[index].price.toString(),
-                                                              style: const TextStyle(color: Colors.white),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
+                                                Container(
+                                                  child: const Icon(Icons.location_on_outlined, color: Colors.white,),
+                                                  width: 10,
                                                 ),
+                                                Container(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        items[index].name.toString(),
+                                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      const SizedBox(height: 5),
+                                                      Text(
+                                                        items[index].description.toString(),
+                                                        style: const TextStyle(color: Colors.white),
+                                                      ),
+                                                      Text(
+                                                        'DOP\$ '+items[index].price.toString(),
+                                                        style: const TextStyle(color: Colors.white),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  width: 150,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    FloatingActionButton(
+                                                      onPressed: () async {
+                                                        var res = await getRoute(items[index].id!);
+                                                        var tmp = jsonDecode(res.body.toString());
+                                                        debugPrint(tmp.toString());
+                                                        polylinesdef = tmp.map<LatLng>((e) => LatLng(double.parse(e[0]),double.parse(e[1]))).toList();
+                                                        setPolylines(polylinesdef);
+                                                        setState(() {});
+                                                      },
+                                                      child: const FaIcon(FontAwesomeIcons.solidEye,size: 20,),
+                                                      elevation: 0.0,
+                                                      mini: true,
+                                                      backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
+                                                    ),
+                                                    FloatingActionButton(
+                                                      onPressed: () async {
+                                                        polylinesdef = [LatLng(0,0)];
+                                                        setPolylines(polylinesdef);
+                                                        setState(() {});
+                                                        print(polylinesdef);
+                                                      },
+                                                      child: const FaIcon(FontAwesomeIcons.solidEyeSlash, size: 20,),
+                                                      elevation: 0.0,
+                                                      mini: true,
+                                                      backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
+                                                    ),
+                                                  ],
+                                                )
                                               ],
                                             ),
                                           ),
@@ -390,7 +402,7 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  setPolylines() async {
+  setPolylines(List<LatLng> Points) async {
     setState(() {
       // create a Polyline instance
       // with an id, an RGB color and the list of LatLng pairs
@@ -398,12 +410,9 @@ class MapSampleState extends State<MapSample> {
           polylineId: const PolylineId("poly"),
           color: const Color.fromARGB(255, 40, 122, 198),
           width: 5,
-          points: widget.poly
+          points: Points
       );
 
-      // add the constructed polyline as a set of points
-      // to the polyline set, which will eventually
-      // end up showing up on the map
       _polylines.add(polyline);
     });
   }
