@@ -10,7 +10,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/controllers/trip_controller.dart';
-import 'package:goutu/src/sub_views/likes_page.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/src/views/tabbed_page.dart';
 
@@ -18,10 +17,13 @@ final toController = TextEditingController();
 final fromController = TextEditingController();
 
 List<Places> places = <Places>[];
+List<Places> items = <Places>[];
 
 List<List<double>> polylinesarr = [];
-
+List<String?> names = [];
 var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
+
+var from_node, to_node;
 
 class MapSample extends StatefulWidget {
   //final Map<PolylineId,Polyline> poly;
@@ -39,15 +41,15 @@ void getLocation() async {
   lat = position.latitude;
   lon = position.longitude;
 }
-List<Places> items = <Places>[];
 
 class MapSampleState extends State<MapSample> {
 
   void getPlacesData () async{
     var body = await getAllRoutes();
-    places = json.decode(body.body).map<Places>((value) => Places.fromJson(value)).toList();
-    items = places;
-
+    places = json.decode(utf8.decode(body.bodyBytes)).map<Places>((value) => Places.fromJson(value)).toList();
+    print(places[32].name);
+    items.addAll(places);
+    names = places.map((e) => e.name).toList();
     setState(() {});
   }
 
@@ -62,8 +64,6 @@ class MapSampleState extends State<MapSample> {
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) {getPlacesData();
         });
-    print(places);
-    print(items);
     setState(() {});
   }
   //final Location location = Location();
@@ -92,11 +92,11 @@ class MapSampleState extends State<MapSample> {
     dummySearchList.addAll(places);
     if(query.isNotEmpty) {
       List<Places>? dummyListData = <Places>[];
-      dummySearchList.forEach((item) {
+      for (var item in dummySearchList) {
         if(item.name!.toLowerCase().contains(query.toLowerCase())) {
           dummyListData.add(item);
         }
-      });
+      }
       setState(() {
         items.clear();
         items.addAll(dummyListData);
@@ -209,69 +209,81 @@ class MapSampleState extends State<MapSample> {
                                     itemBuilder: (BuildContext context, int index,) {
                                       return Column(
                                         children: [
-                                          Container(
-                                            height: 80,
-                                            color: Colors.white12,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                              children: [
-                                                Container(
-                                                  child: const Icon(Icons.location_on_outlined, color: Colors.white,),
-                                                  width: 10,
-                                                ),
-                                                Container(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                          GestureDetector(
+                                            onTap: (){
+                                              if(names.contains(fromController.text)){
+                                                toController.text = items[index].name!;
+                                                from_node = items[index].id;
+                                              }
+                                              else if(toController.text == ''){
+                                                fromController.text = items[index].name!;
+                                                to_node = items[index].id;
+
+                                              }
+                                              getPlacesData(); //Se puede mejorar
+                                            },
+                                            child: Container(
+                                              height: 80,
+                                              color: Colors.white12,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  Container(
+                                                    child: const Icon(Icons.location_on_outlined, color: Colors.white,),
+                                                    width: 10,
+                                                  ),
+                                                  Container(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Text(
+                                                          items[index].name.toString(),
+                                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                        ),
+                                                        const SizedBox(height: 5),
+                                                        Text(
+                                                          items[index].description.toString(),
+                                                          style: const TextStyle(color: Colors.white),
+                                                        ),
+                                                        Text(
+                                                          'DOP\$ '+items[index].price.toString(),
+                                                          style: const TextStyle(color: Colors.white),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    width: 150,
+                                                  ),
+                                                  Row(
                                                     children: [
-                                                      Text(
-                                                        items[index].name.toString(),
-                                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                      FloatingActionButton(
+                                                        onPressed: () async {
+                                                          var res = await getRoute(items[index].id!);
+                                                          var tmp = jsonDecode(res.body.toString());
+                                                          polylinesdef = tmp.map<LatLng>((e) => LatLng(double.parse(e[0]),double.parse(e[1]))).toList();
+                                                          setPolylines(polylinesdef);
+                                                          setState(() {});
+                                                        },
+                                                        child: const FaIcon(FontAwesomeIcons.solidEye,size: 20,),
+                                                        elevation: 0.0,
+                                                        mini: true,
+                                                        backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
                                                       ),
-                                                      const SizedBox(height: 5),
-                                                      Text(
-                                                        items[index].description.toString(),
-                                                        style: const TextStyle(color: Colors.white),
-                                                      ),
-                                                      Text(
-                                                        'DOP\$ '+items[index].price.toString(),
-                                                        style: const TextStyle(color: Colors.white),
+                                                      FloatingActionButton(
+                                                        onPressed: () async {
+                                                          polylinesdef = [LatLng(0,0)];
+                                                          setPolylines(polylinesdef);
+                                                          setState(() {});
+                                                        },
+                                                        child: const FaIcon(FontAwesomeIcons.solidEyeSlash, size: 20,),
+                                                        elevation: 0.0,
+                                                        mini: true,
+                                                        backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
                                                       ),
                                                     ],
-                                                  ),
-                                                  width: 150,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    FloatingActionButton(
-                                                      onPressed: () async {
-                                                        var res = await getRoute(items[index].id!);
-                                                        var tmp = jsonDecode(res.body.toString());
-                                                        debugPrint(tmp.toString());
-                                                        polylinesdef = tmp.map<LatLng>((e) => LatLng(double.parse(e[0]),double.parse(e[1]))).toList();
-                                                        setPolylines(polylinesdef);
-                                                        setState(() {});
-                                                      },
-                                                      child: const FaIcon(FontAwesomeIcons.solidEye,size: 20,),
-                                                      elevation: 0.0,
-                                                      mini: true,
-                                                      backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
-                                                    ),
-                                                    FloatingActionButton(
-                                                      onPressed: () async {
-                                                        polylinesdef = [LatLng(0,0)];
-                                                        setPolylines(polylinesdef);
-                                                        setState(() {});
-                                                        print(polylinesdef);
-                                                      },
-                                                      child: const FaIcon(FontAwesomeIcons.solidEyeSlash, size: 20,),
-                                                      elevation: 0.0,
-                                                      mini: true,
-                                                      backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(height: 5,)
@@ -296,7 +308,7 @@ class MapSampleState extends State<MapSample> {
                     opacity: _percent,
                     child: Material(
                       elevation: 10,
-                      color: Color.fromRGBO(16, 16, 20, 1),
+                      color: const Color.fromRGBO(16, 16, 20, 1),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [

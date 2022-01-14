@@ -1,33 +1,21 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/controllers/trip_controller.dart';
+import 'package:goutu/src/controllers/user_controller.dart';
 import 'package:goutu/src/views/info_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
-/*final List<Places> places = <Places>[
-  Places(
-      entries: 'Jardin Botanico',
-      km: '1.5km',
-      price: 'DOP 95',
-      image: "https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"
-  ),
+final tripController = TextEditingController();
 
-  Places(entries: 'Marbella', km: '2.5km', price: 'DOP 120', image: "https://www.marbella-hills-homes.com/cms/wp-content/uploads/2020/12/1.jpg"),
-  Places(entries: 'Los Tres Ojos', km: '1km', price: 'DOP 75', image: "https://images.visitarepublicadominicana.org/los-tres-ojos-santo-domingo.jpg"),
-];*/
+List<Places> spots = <Places>[];
 
-final List<Places> places = <Places>[];
+List<List<double>> polylinesarr = [];
 
-final List<List<double>> polylinesarr = [
-  [18.472425, -69.926299],
-  [18.470187, -69.931642],
-  [18.468640, -69.926063]
-];
-
-final polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
+var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
 
 class NewHomePage extends StatefulWidget {
   final User user;
@@ -38,17 +26,29 @@ class NewHomePage extends StatefulWidget {
 }
 
 class _NewHomePage extends State<NewHomePage> {
+
+  void getPlacesData () async{
+    var body = await getTouristSpots();
+    spots = json.decode(utf8.decode(body.bodyBytes)).map<Places>((value) => Places.fromJson(value)).toList();
+    items = spots;
+
+    setState(() {});
+  }
+
   @override
   void initState(){
     super.initState();
-    //var list = getAllRoutes();
-    //print(list);
+
+    WidgetsBinding.instance
+        ?.addPostFrameCallback((_) {getPlacesData();
+    });
   }
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Home Page'),
+          title: const Text('Tourist Spots'),
           backgroundColor: const Color.fromRGBO(16, 16, 20, 1),
           actions: <Widget>[
             Padding(
@@ -110,7 +110,7 @@ class _NewHomePage extends State<NewHomePage> {
               padding: const EdgeInsets.only(top: 60),
               child: ListView.separated(
                 padding: const EdgeInsets.all(15),
-                itemCount: places.length,
+                itemCount: spots.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     height: 100,
@@ -127,37 +127,41 @@ class _NewHomePage extends State<NewHomePage> {
                           },
                           child: Row(
                             children: [
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 5),
                               Container(
-                                width: 80,
+                                width: 100,
                                 height: 70,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(places[index].id.toString()),
+                                    image: NetworkImage(spots[index].image_urls![0].toString()),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 20),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 20),
-                                  Text(
-                                    places[index].name.toString(),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    places[index].description.toString(),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                  Text(
-                                    places[index].price.toString(),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
+                              const SizedBox(width: 5),
+                              SizedBox(
+                                width: 125,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      spots[index].name.toString(),
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    /*Text(
+                                      spots[index].province.toString(),
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      spots[index].price.toString(),
+                                      style: const TextStyle(color: Colors.white),
+                                    ),*/
+                                  ],
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -171,7 +175,7 @@ class _NewHomePage extends State<NewHomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const InfoPage()));
+                                              InfoPage(place: spots[index])));
                                 },
                                 child: Container(
                                   child: const Icon(
@@ -188,8 +192,10 @@ class _NewHomePage extends State<NewHomePage> {
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () async {
-
-                                  //Add likes
+                                  Map<String, int> body = {
+                                    "favorite_spot": spots[index].id!
+                                  };
+                                  addTouristSpotsByUser(widget.user.username!,body);
 
                                 },
                                 child: Container(

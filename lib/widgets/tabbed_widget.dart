@@ -21,7 +21,7 @@ Widget menu() {
       indicatorColor: Colors.blue,
       tabs: [
         Tab(
-          text: "Home",
+          text: "Spots",
           icon: Icon(Icons.house),
         ),
         Tab(

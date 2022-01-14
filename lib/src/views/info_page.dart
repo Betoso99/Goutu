@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:goutu/models/places.dart';
 
 class InfoPage extends StatefulWidget {
   static String identifier = 'loginPage';
-
-  const InfoPage({Key? key}) : super(key: key);
+  final Places place;
+  const InfoPage({Key? key, required this.place}) : super(key: key);
 
   @override
   _InfoPage createState() => _InfoPage();
@@ -21,7 +22,7 @@ class _InfoPage extends State<InfoPage> {
         ),
         body: Stack(
           children: [
-            Image.network("https://images.visitarepublicadominicana.org/jardin-botanico-santo-domingo.jpg"),
+            Image.network(widget.place.image_urls![1]),
             DraggableScrollableSheet(
               initialChildSize: 0.8,
               minChildSize: 0.65,
@@ -43,21 +44,38 @@ class _InfoPage extends State<InfoPage> {
                               "-------------------------------------------------------------------------",
                               style: TextStyle(color: Colors.white),
                             ),
+                            Row(
+                              children: [
+                                const SizedBox(width: 30,),
+                                Text(
+                                  widget.place.province_name.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(width: 30,),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.center,
+                            ),
+                            const Text(
+                              "-------------------------------------------------------------------------",
+                              style: TextStyle(color: Colors.white),
+                            ),
                             SizedBox(height: space),
                             Row(
                               children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: leftpad,
-                                  ),
-                                ),
-                                const Text(
-                                  "Distancia: 1.5km",
-                                  style: TextStyle(
-                                    fontSize: 20,
+                                const SizedBox(width: 30,),
+                                Flexible(child: Text(
+                                  widget.place.description!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
                                     color: Colors.white,
                                   ),
-                                )
+                                  textAlign: TextAlign.center,
+                                )),
+                                const SizedBox(width: 30,),
                               ],
                             ),
                             SizedBox(height: space),
@@ -66,23 +84,8 @@ class _InfoPage extends State<InfoPage> {
                               style: TextStyle(color: Colors.white),
                             ),
                             SizedBox(height: space),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: leftpad,
-                                  ),
-                                ),
-                                const Text(
-                                  "Precio: DOP 95",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(height: space),
+
+                            /*SizedBox(height: space),
                             const Text(
                               "-------------------------------------------------------------------------",
                               style: TextStyle(color: Colors.white),
@@ -124,7 +127,7 @@ class _InfoPage extends State<InfoPage> {
                                   ),
                                 )
                               ],
-                            ),
+                            ),*/
                           ],
                         ),
                       ),
@@ -146,13 +149,15 @@ class _InfoPage extends State<InfoPage> {
                   borderRadius: BorderRadius.circular(40),
                 ),
                 alignment: Alignment.center,
-                child: const Text(
-                  "Jardin Botanico",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40
+                child: Flexible(
+                  child: Text(
+                    widget.place.name!,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20
+                    ),
                   ),
-                ),
+                )
               ),
             )
           ],

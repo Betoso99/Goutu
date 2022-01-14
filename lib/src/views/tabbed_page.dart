@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/sub_views/likes_page.dart';
-import 'package:goutu/src/sub_views/new_home_page.dart';
+import 'package:goutu/src/sub_views/tourist_spots_page.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/widgets/tabbed_widget.dart';
 
