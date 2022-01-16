@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/places.dart';
 import 'package:goutu/models/user.dart';
@@ -33,6 +35,14 @@ class LikesPage extends StatefulWidget {
 }
 
 class _LikesPage extends State<LikesPage> {
+
+  PolylinePoints polylinePoints = PolylinePoints();
+  String googleAPiKey = "AIzaSyB_iMzzl__vncphopqHr8r51Frw5H_q2eU";
+  List<LatLng> polylineCoordinates = [];
+
+  late LatLng startLocation;
+  late LatLng endLocation;
+
   void getPlacesData () async{
     var body = await getTouristSpotsByUser(widget.user.username!);
     fav_spots = json.decode(utf8.decode(body.bodyBytes))['favorite_tourist_spots'].map<Places>((value) => Places.fromJson(value)).toList();
@@ -49,6 +59,25 @@ class _LikesPage extends State<LikesPage> {
         ?.addPostFrameCallback((_) {getPlacesData();
     });
   }
+
+  getDirections() async {
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      googleAPiKey,
+      PointLatLng(startLocation.latitude, startLocation.longitude),
+      PointLatLng(endLocation.latitude, endLocation.longitude),
+      travelMode: TravelMode.transit,
+    );
+
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    } else {
+      print(result.errorMessage);
+    }
+    //addPolyLine(polylineCoordinates);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -61,10 +90,11 @@ class _LikesPage extends State<LikesPage> {
               padding: const EdgeInsets.only(top: 12, bottom: 12),
               child: GestureDetector(
                 onTap: () async {
+                  polylineCoordinates = [const LatLng(0,0)];
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
+                          builder: (context) => MapSample(poly: polylineCoordinates, user: widget.user,)));
                 },
                 child: Image.asset(
                   'images/tempsnip.png',
@@ -126,10 +156,14 @@ class _LikesPage extends State<LikesPage> {
                       children: [
                         GestureDetector(
                           onTap: () async {
+                            var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                            startLocation = LatLng(position.latitude, position.longitude);
+                            endLocation = LatLng(double.parse(fav_spots[index].latitude!),double.parse(fav_spots[index].longitude!));
+                            getDirections();
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MapSample(poly: polylinesdef, user: widget.user,)));
+                                    builder: (context) => MapSample(poly: polylineCoordinates, user: widget.user,)));
                           },
                           child: Row(
                             children: [

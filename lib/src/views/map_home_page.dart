@@ -47,7 +47,6 @@ class MapSampleState extends State<MapSample> {
   void getPlacesData () async{
     var body = await getAllRoutes();
     places = json.decode(utf8.decode(body.bodyBytes)).map<Places>((value) => Places.fromJson(value)).toList();
-    print(places[32].name);
     items.addAll(places);
     names = places.map((e) => e.name).toList();
     setState(() {});
@@ -170,14 +169,16 @@ class MapSampleState extends State<MapSample> {
                   child: NotificationListener<DraggableScrollableNotification>(
                     onNotification: (notification) {
                       setState(() {
-                        _percent = 2 * notification.extent - 0.6;
+                        //print(notification.extent);
+                        _percent = 2 * notification.extent - 0.7;
+                        //print(_percent);
                       });
                       return true;
                     },
                     child: DraggableScrollableSheet(
-                      maxChildSize: 0.8,
-                      minChildSize: 0.3,
-                      initialChildSize: 0.3,
+                      maxChildSize: 0.85,
+                      minChildSize: 0.4,
+                      initialChildSize: 0.4,
                       builder: (context,controller) {
                         return Material(
                           elevation: 10,
@@ -242,10 +243,10 @@ class MapSampleState extends State<MapSample> {
                                                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                                         ),
                                                         const SizedBox(height: 5),
-                                                        Text(
+                                                        /*Text(
                                                           items[index].description.toString(),
                                                           style: const TextStyle(color: Colors.white),
-                                                        ),
+                                                        ),*/
                                                         Text(
                                                           'DOP\$ '+items[index].price.toString(),
                                                           style: const TextStyle(color: Colors.white),
