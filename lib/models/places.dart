@@ -23,8 +23,9 @@ class Places {
   String? longitude;
   List<List<double>>? route_coordinates;
   List<dynamic>? image_urls;
+  List<dynamic>? stops;
 
-  Places({this.id, this.name, this.description, this.price, this.province, this.province_name, this.transport_type, this.organization, this.route_coordinates, this.image_urls, this.longitude, this.latitude});
+  Places({this.id, this.name, this.description, this.price, this.province, this.province_name, this.transport_type, this.organization, this.route_coordinates, this.image_urls, this.longitude, this.latitude, this.stops});
 
   factory Places.fromJson(Map<String, dynamic> json) => Places(
       id: json['id'],
@@ -38,7 +39,8 @@ class Places {
       route_coordinates: json['route_coordinates'],
       image_urls: json['image_urls'],
       latitude: json['latitude'],
-      longitude: json['longitude']
+      longitude: json['longitude'],
+      stops: json['stops']
   );
 
   Map<String, dynamic> toJson() => {
@@ -53,7 +55,8 @@ class Places {
     "route_coordinates": route_coordinates,
     "image_urls": image_urls,
     "longitude": longitude,
-    "latitude": latitude
+    "latitude": latitude,
+    "stops":stops
   };
 }
 

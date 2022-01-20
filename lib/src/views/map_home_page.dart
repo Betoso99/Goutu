@@ -19,9 +19,11 @@ final fromController = TextEditingController();
 
 List<Places> places = <Places>[];
 List<Places> items = <Places>[];
-List<List<int>> ids = [];
+List<List<dynamic>?> ids = [];
 List<List<double>> polylinesarr = [];
 List<String?> names = [];
+var stop = 0;
+int n=0;
 var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
 
 var from_node, to_node;
@@ -50,21 +52,13 @@ class MapSampleState extends State<MapSample> {
     places = json.decode(utf8.decode(body.bodyBytes)).map<Places>((value) => Places.fromJson(value)).toList();
     items.addAll(places);
     names = places.map((e) => e.name).toList();
+    for (var i = 0; i<places.length; i++) {
+      ids.add(places[i].stops);
+    }
+    //ids.forEach((element) {print(element);});
     setState(() {});
   }
 
-  getAllStops() async {
-    for(var i = 0; i < places.length; i++){
-      var body = await getStops(places[i].id!);
-      var json_data =  json.decode(body.body)['stops'].cast<int>();
-
-      ids.add(json_data);
-      setState(() {
-              });
-    }
-
-    print(ids);
-  }
 
   @override
   void initState() {
@@ -77,7 +71,6 @@ class MapSampleState extends State<MapSample> {
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) {
           getPlacesData();
-          getAllStops();
         });
     setState(() {});
   }
@@ -126,11 +119,12 @@ class MapSampleState extends State<MapSample> {
     }
   }
 
-  getNodeDirections() async {
+  getNodeDirections(int from, int to) async {
     Map<String,int> nodes = {
-      "id_from_node": from_node,
-      "id_to_node": to_node
+      "id_from_node": from,
+      "id_to_node": to
     };
+    print(nodes);
     var path = await getGraphRoute(nodes);
     var path_info = Pathing.fromJson(json.decode(path.body)['shortest_path'][0]);
     polylinesdef = [];
@@ -144,17 +138,14 @@ class MapSampleState extends State<MapSample> {
   }
 
 
-/*  Future<List<int>> stops (int index) async {
-    List<int> ids = [];
-    var body = await getStops(index);
-    var json_data =  json.decode(body.body)['stops'];
-    ids.add(json_data['id']);
-    return ids;
-  }*/
+  fillStops()  {
+    places.forEach((element) {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    int dropdownValue = 1;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home Page"),
@@ -251,22 +242,10 @@ class MapSampleState extends State<MapSample> {
                                     itemCount: items.length,
                                     controller: controller,
                                     itemBuilder: (BuildContext context, int index,) {
+                                      //var dropdownValue = ids[index].first;
                                       return Column(
                                         children: [
-                                          GestureDetector(
-                                            onTap: (){
-                                              if(names.contains(fromController.text)){
-                                                toController.text = items[index].name!;
-                                                to_node = items[index].id;
-                                                getNodeDirections();
-                                              }
-                                              else {
-                                                fromController.text = items[index].name!;
-                                                from_node = items[index].id;
-                                              }
-                                              getPlacesData(); //Se puede mejorar
-                                            },
-                                            child: Container(
+                                          Container(
                                               height: 120,
                                               color: Colors.white12,
                                               child: Row(
@@ -297,21 +276,36 @@ class MapSampleState extends State<MapSample> {
                                                             ),
                                                             const SizedBox(width: 5,),
                                                             DropdownButton(
-                                                              value: dropdownValue,
+                                                              value: null,
                                                               icon: const Icon(Icons.arrow_downward),
+                                                              menuMaxHeight: 300,
+                                                              hint: Text('Select stop',style: TextStyle(color: Colors.white),),
                                                               elevation: 20,
                                                               style: const TextStyle(color: Color.fromRGBO(255, 80, 47, 1.0),),
                                                               underline: Container(
                                                                 height: 2,
                                                                 color: const Color.fromRGBO(255, 80, 47, 1.0),
                                                               ),
-                                                              onChanged: (int? newValue) {
+                                                              onChanged: (Object? newValue) {
                                                                 setState(() {
-                                                                  dropdownValue = newValue!;
+                                                                  var position = ids[index]?.indexOf(newValue);
+                                                                  n=position!;
+                                                                  stop = ids[index]![position];
+                                                                  //print(stop.toString());
+                                                                  if(names.contains(fromController.text.split(',')[0])){
+                                                                    toController.text = items[index].name! + ', '+ stop.toString();
+                                                                    to_node = stop;
+                                                                    getNodeDirections(from_node, to_node);
+                                                                  }
+                                                                  else {
+                                                                    fromController.text = items[index].name! +', '+ stop.toString();
+                                                                    from_node = stop;
+                                                                  }
+                                                                  getPlacesData(); //Se puede mejorar
                                                                 });
                                                               },
-                                                              items: ids[index]
-                                                                  .map<DropdownMenuItem<int>>((int value) {
+                                                              items: ids[index]!
+                                                                  .map<DropdownMenuItem<int>>((dynamic value) {
                                                                     return DropdownMenuItem<int>(
                                                                       value: value,
                                                                       child: Text(value.toString()),
@@ -341,7 +335,7 @@ class MapSampleState extends State<MapSample> {
                                                       ),
                                                       FloatingActionButton(
                                                         onPressed: () async {
-                                                          polylinesdef = [LatLng(0,0)];
+                                                          polylinesdef = [const LatLng(0,0)];
                                                           setPolylines(polylinesdef);
                                                           setState(() {});
                                                         },
@@ -355,7 +349,7 @@ class MapSampleState extends State<MapSample> {
                                                 ],
                                               ),
                                             ),
-                                          ),
+                                          //),
                                           const SizedBox(height: 5,)
                                         ],
                                       );

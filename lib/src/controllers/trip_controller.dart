@@ -55,8 +55,9 @@ Future<http.Response> getGraphRoute(Map<String, int> nodes) async {
   return response;
 }
 
-Future<http.Response> getStops(int id) async {
-  final response = await http.get(Uri.parse(url+'/routes/$id/stops/'),
+/*
+Future<http.Response> getStops() async {
+  final response = await http.get(Uri.parse(url+'/routes/stops/'),
     headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader : basicAuth
@@ -64,4 +65,5 @@ Future<http.Response> getStops(int id) async {
   );
   return response;
 }
+*/
 
