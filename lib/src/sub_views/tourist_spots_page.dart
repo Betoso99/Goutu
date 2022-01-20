@@ -68,7 +68,6 @@ class _NewHomePage extends State<NewHomePage> {
     } else {
       print(result.errorMessage);
     }
-    //addPolyLine(polylineCoordinates);
   }
 
   @override
@@ -153,7 +152,6 @@ class _NewHomePage extends State<NewHomePage> {
                             startLocation = LatLng(position.latitude, position.longitude);
                             endLocation = LatLng(double.parse(spots[index].latitude!),double.parse(spots[index].longitude!));
                             getDirections();
-                            print(polylineCoordinates);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

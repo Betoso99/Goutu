@@ -7,6 +7,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:goutu/models/pathing.dart';
 import 'package:goutu/models/places.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/controllers/trip_controller.dart';
@@ -18,7 +19,7 @@ final fromController = TextEditingController();
 
 List<Places> places = <Places>[];
 List<Places> items = <Places>[];
-
+List<List<int>> ids = [];
 List<List<double>> polylinesarr = [];
 List<String?> names = [];
 var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
@@ -52,6 +53,19 @@ class MapSampleState extends State<MapSample> {
     setState(() {});
   }
 
+  getAllStops() async {
+    for(var i = 0; i < places.length; i++){
+      var body = await getStops(places[i].id!);
+      var json_data =  json.decode(body.body)['stops'].cast<int>();
+
+      ids.add(json_data);
+      setState(() {
+              });
+    }
+
+    print(ids);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +75,9 @@ class MapSampleState extends State<MapSample> {
     }
 
     WidgetsBinding.instance
-        ?.addPostFrameCallback((_) {getPlacesData();
+        ?.addPostFrameCallback((_) {
+          getPlacesData();
+          getAllStops();
         });
     setState(() {});
   }
@@ -109,9 +125,36 @@ class MapSampleState extends State<MapSample> {
       });
     }
   }
+
+  getNodeDirections() async {
+    Map<String,int> nodes = {
+      "id_from_node": from_node,
+      "id_to_node": to_node
+    };
+    var path = await getGraphRoute(nodes);
+    var path_info = Pathing.fromJson(json.decode(path.body)['shortest_path'][0]);
+    polylinesdef = [];
+    print(path_info);
+    path_info.route_coordinates?.forEach((element) {
+      polylinesdef.add(LatLng(element['coordinates'][0], element['coordinates'][1]));
+      //print(element['coordinates']);
+    });
+    setPolylines(polylinesdef);
+    setState(() {    });
+  }
+
+
+/*  Future<List<int>> stops (int index) async {
+    List<int> ids = [];
+    var body = await getStops(index);
+    var json_data =  json.decode(body.body)['stops'];
+    ids.add(json_data['id']);
+    return ids;
+  }*/
+
   @override
   Widget build(BuildContext context) {
-
+    int dropdownValue = 1;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home Page"),
@@ -214,17 +257,17 @@ class MapSampleState extends State<MapSample> {
                                             onTap: (){
                                               if(names.contains(fromController.text)){
                                                 toController.text = items[index].name!;
-                                                from_node = items[index].id;
-                                              }
-                                              else if(toController.text == ''){
-                                                fromController.text = items[index].name!;
                                                 to_node = items[index].id;
-
+                                                getNodeDirections();
+                                              }
+                                              else {
+                                                fromController.text = items[index].name!;
+                                                from_node = items[index].id;
                                               }
                                               getPlacesData(); //Se puede mejorar
                                             },
                                             child: Container(
-                                              height: 80,
+                                              height: 120,
                                               color: Colors.white12,
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -242,15 +285,41 @@ class MapSampleState extends State<MapSample> {
                                                           items[index].name.toString(),
                                                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                                         ),
-                                                        const SizedBox(height: 5),
-                                                        /*Text(
-                                                          items[index].description.toString(),
-                                                          style: const TextStyle(color: Colors.white),
-                                                        ),*/
                                                         Text(
                                                           'DOP\$ '+items[index].price.toString(),
                                                           style: const TextStyle(color: Colors.white),
                                                         ),
+                                                        Row(
+                                                          children: [
+                                                            const Text(
+                                                              'Parada:',
+                                                              style: TextStyle(color: Colors.white),
+                                                            ),
+                                                            const SizedBox(width: 5,),
+                                                            DropdownButton(
+                                                              value: dropdownValue,
+                                                              icon: const Icon(Icons.arrow_downward),
+                                                              elevation: 20,
+                                                              style: const TextStyle(color: Color.fromRGBO(255, 80, 47, 1.0),),
+                                                              underline: Container(
+                                                                height: 2,
+                                                                color: const Color.fromRGBO(255, 80, 47, 1.0),
+                                                              ),
+                                                              onChanged: (int? newValue) {
+                                                                setState(() {
+                                                                  dropdownValue = newValue!;
+                                                                });
+                                                              },
+                                                              items: ids[index]
+                                                                  .map<DropdownMenuItem<int>>((int value) {
+                                                                    return DropdownMenuItem<int>(
+                                                                      value: value,
+                                                                      child: Text(value.toString()),
+                                                                    );
+                                                                  }).toList(),
+                                                            )
+                                                          ],
+                                                        )
                                                       ],
                                                     ),
                                                     width: 150,
@@ -332,6 +401,10 @@ class MapSampleState extends State<MapSample> {
                                     child: TextField(
                                       onChanged: (value) {
                                         filterSearchResults(value);
+                                        fromController.text = "";
+                                        toController.text = "";
+                                        from_node = 0;
+                                        to_node = 0;
                                       },
                                       controller: fromController,
                                       decoration: InputDecoration(
