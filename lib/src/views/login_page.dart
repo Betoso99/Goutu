@@ -75,9 +75,9 @@ StatefulWidget _usernameText(){
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white)
               ),
-              hintText: 'example@gmail.com',
+              hintText: 'jperez',
               hintStyle: TextStyle(color: Colors.white),
-              labelText: 'Email Address',
+              labelText: 'Username',
               labelStyle: TextStyle(color: Colors.white),
             ),
           ),

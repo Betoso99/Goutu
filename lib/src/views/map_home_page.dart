@@ -14,22 +14,24 @@ import 'package:goutu/src/controllers/trip_controller.dart';
 import 'package:goutu/src/sub_views/profile_page.dart';
 import 'package:goutu/src/views/tabbed_page.dart';
 
+final Completer<GoogleMapController> _controller = Completer();
 final toController = TextEditingController();
 final fromController = TextEditingController();
-
+Set<Marker> markers = {};
 List<Places> places = <Places>[];
 List<Places> items = <Places>[];
 List<List<dynamic>?> ids = [];
 List<List<double>> polylinesarr = [];
 List<String?> names = [];
-var stop = 0;
-int n=0;
+Set<Polyline> _polylines = {};
+List<LatLng> polylineCoordinates = [];
+PolylinePoints polylinePoints = PolylinePoints();
+double _percent = 0.0;
 var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
-
-var from_node, to_node;
+var stop = 0, n=0, from_node, to_node, lat, lon;
+var count = true;
 
 class MapSample extends StatefulWidget {
-  //final Map<PolylineId,Polyline> poly;
   final List<LatLng> poly;
   final User user;
   const MapSample({Key? key, required this.poly, required this.user}) : super(key: key);
@@ -38,7 +40,6 @@ class MapSample extends StatefulWidget {
   State<MapSample> createState() => MapSampleState();
 }
 
-var lat, lon;
 void getLocation() async {
   var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   lat = position.latitude;
@@ -55,45 +56,51 @@ class MapSampleState extends State<MapSample> {
     for (var i = 0; i<places.length; i++) {
       ids.add(places[i].stops);
     }
-    //ids.forEach((element) {print(element);});
-    setState(() {});
+    setState(() {
+      var n = (widget.poly.length/2).round();
+      _goToMe(widget.poly[n].latitude, widget.poly[n].longitude);
+    });
+
   }
 
+  setMarkers(double _lat, double _lng){
+    markers.add(Marker( //add second marker
+      markerId: MarkerId(markers.length.toString()),
+      position: LatLng(_lat, _lng), //position of marker
+      infoWindow: const InfoWindow( //popup info
+        title: 'My Custom Title ',
+        snippet: 'My Custom Subtitle',
+      ),
+      icon: BitmapDescriptor.defaultMarker//Icon(Icons.location_on), //Icon for Marker
+    ));
+
+  }
 
   @override
   void initState() {
     super.initState();
 
-    if(widget.poly.isNotEmpty){
+    /*if(widget.poly.isNotEmpty){
       polylinesdef = widget.poly;
-    }
+    }*/
 
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) {
           getPlacesData();
+          if(widget.poly != []){
+            setPolylines(widget.poly);
+            setMarkers(widget.poly.last.latitude, widget.poly.last.longitude);
+          }
         });
-    setState(() {});
+    setState(() {
+
+    });
   }
-  //final Location location = Location();
-  final Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(18.472346, -69.918128),
     zoom: 16,
   );
-
-  static final CameraPosition _MyLoc = CameraPosition(
-      target: LatLng(lat,lon),
-      zoom: 16
-  );
-
-  //Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
-  List<LatLng> polylineCoordinates = [];
-  PolylinePoints polylinePoints = PolylinePoints();
-  /* BitmapDescriptor sourceIcon;
-  BitmapDescriptor destinationIcon;*/
-  double _percent = 0.0;
 
   void filterSearchResults(String query) {
     List<Places>? dummySearchList = <Places>[];
@@ -128,20 +135,21 @@ class MapSampleState extends State<MapSample> {
     var path = await getGraphRoute(nodes);
     var path_info = Pathing.fromJson(json.decode(path.body)['shortest_path'][0]);
     polylinesdef = [];
-    print(path_info);
     path_info.route_coordinates?.forEach((element) {
       polylinesdef.add(LatLng(element['coordinates'][0], element['coordinates'][1]));
-      //print(element['coordinates']);
+      if(element['is_stop'] == true){
+        setMarkers(element['coordinates'][0], element['coordinates'][1]);
+      }
+      print(element['coordinates']);
     });
+    polylinesdef.forEach((element) {print(element);});
     setPolylines(polylinesdef);
+    setMarkers(path_info.route_coordinates!.first['coordinates'][0], path_info.route_coordinates!.first['coordinates'][1]);
+    setMarkers(path_info.route_coordinates!.last['coordinates'][0], path_info.route_coordinates!.last['coordinates'][1]);
+    _goToMe(path_info.route_coordinates![0]['coordinates'][0],path_info.route_coordinates![0]['coordinates'][1]);
+    fromController.clear();
+    toController.clear();
     setState(() {    });
-  }
-
-
-  fillStops()  {
-    places.forEach((element) {
-
-    });
   }
 
   @override
@@ -188,11 +196,14 @@ class MapSampleState extends State<MapSample> {
                       mapType: MapType.normal,
                       initialCameraPosition: _kGooglePlex,
                       onMapCreated: (GoogleMapController controller) async {
-                        _controller.complete(controller);
+                        if(!_controller.isCompleted){
+                          _controller.complete(controller);
+                        }
+                        getPlacesData();
                         LocationPermission permission = await Geolocator.requestPermission();
-                        setPolylines(widget.poly);
                       },
                       polylines: _polylines,
+                      markers: markers,
                       mapToolbarEnabled: true,
                       buildingsEnabled: true,
                       compassEnabled: true,
@@ -276,7 +287,7 @@ class MapSampleState extends State<MapSample> {
                                                             ),
                                                             const SizedBox(width: 5,),
                                                             DropdownButton(
-                                                              value: null,
+                                                              //value: null,
                                                               icon: const Icon(Icons.arrow_downward),
                                                               menuMaxHeight: 300,
                                                               hint: Text('Select stop',style: TextStyle(color: Colors.white),),
@@ -287,22 +298,25 @@ class MapSampleState extends State<MapSample> {
                                                                 color: const Color.fromRGBO(255, 80, 47, 1.0),
                                                               ),
                                                               onChanged: (Object? newValue) {
+                                                                markers.clear();
+                                                                var position = ids[index]?.indexOf(newValue);
+                                                                n=position!;
+                                                                stop = ids[index]![position];
+                                                                //print(stop.toString());
+                                                                if(names.contains(fromController.text.split(',')[0])){
+                                                                  toController.text = items[index].name! + ', '+ stop.toString();
+                                                                  to_node = stop;
+                                                                  getNodeDirections(from_node, to_node);
+                                                                }
+                                                                else {
+                                                                  fromController.text = items[index].name! +', '+ stop.toString();
+                                                                  from_node = stop;
+                                                                }
+                                                                getPlacesData();
                                                                 setState(() {
-                                                                  var position = ids[index]?.indexOf(newValue);
-                                                                  n=position!;
-                                                                  stop = ids[index]![position];
-                                                                  //print(stop.toString());
-                                                                  if(names.contains(fromController.text.split(',')[0])){
-                                                                    toController.text = items[index].name! + ', '+ stop.toString();
-                                                                    to_node = stop;
-                                                                    getNodeDirections(from_node, to_node);
-                                                                  }
-                                                                  else {
-                                                                    fromController.text = items[index].name! +', '+ stop.toString();
-                                                                    from_node = stop;
-                                                                  }
-                                                                  getPlacesData(); //Se puede mejorar
-                                                                });
+
+                                                                });//Se puede mejorar
+                                                                //print(stop.toString());
                                                               },
                                                               items: ids[index]!
                                                                   .map<DropdownMenuItem<int>>((dynamic value) {
@@ -322,24 +336,40 @@ class MapSampleState extends State<MapSample> {
                                                     children: [
                                                       FloatingActionButton(
                                                         onPressed: () async {
-                                                          var res = await getRoute(items[index].id!);
-                                                          var tmp = jsonDecode(res.body.toString());
-                                                          polylinesdef = tmp.map<LatLng>((e) => LatLng(double.parse(e[0]),double.parse(e[1]))).toList();
-                                                          setPolylines(polylinesdef);
-                                                          setState(() {});
+                                                          /*if(count == true){*/
+                                                            var res = await getRoute(items[index].id!);
+                                                            var tmp = jsonDecode(res.body.toString());
+                                                            setMarkers(double.parse(tmp.first[0]), double.parse(tmp.first[1]));
+                                                            setMarkers(double.parse(tmp.last[0]), double.parse(tmp.last[1]));
+                                                            polylinesdef = tmp.map<LatLng>((e) => LatLng(double.parse(e[0]),double.parse(e[1]))).toList();
+                                                            setPolylines(polylinesdef);
+                                                            var n = (polylinesdef.length/2).round();
+                                                            _goToMe(polylinesdef[n].latitude, polylinesdef[n].longitude);
+                                                            setState(() {});
+                                                            //print(count.toString());
+                                                          /*}
+                                                          else{
+                                                            markers.clear();
+                                                            polylinesdef.clear();
+                                                            setState(() {});
+                                                            count = true;
+                                                            print(count.toString());
+                                                          }*/
                                                         },
                                                         child: const FaIcon(FontAwesomeIcons.solidEye,size: 20,),
+                                                        heroTag: index.toString(),
                                                         elevation: 0.0,
                                                         mini: true,
                                                         backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
                                                       ),
                                                       FloatingActionButton(
                                                         onPressed: () async {
-                                                          polylinesdef = [const LatLng(0,0)];
-                                                          setPolylines(polylinesdef);
+                                                          polylinesdef.clear();
+                                                          markers.clear();
                                                           setState(() {});
                                                         },
                                                         child: const FaIcon(FontAwesomeIcons.solidEyeSlash, size: 20,),
+                                                        heroTag: index.toString()+index.toString(),
                                                         elevation: 0.0,
                                                         mini: true,
                                                         backgroundColor: const Color.fromRGBO(255, 80, 847, 1),
@@ -395,6 +425,8 @@ class MapSampleState extends State<MapSample> {
                                     child: TextField(
                                       onChanged: (value) {
                                         filterSearchResults(value);
+                                      },
+                                      onTap: (){
                                         fromController.text = "";
                                         toController.text = "";
                                         from_node = 0;
@@ -483,6 +515,7 @@ class MapSampleState extends State<MapSample> {
   }
 
   setPolylines(List<LatLng> Points) async {
+    _polylines.clear();
     setState(() {
       // create a Polyline instance
       // with an id, an RGB color and the list of LatLng pairs
@@ -497,9 +530,11 @@ class MapSampleState extends State<MapSample> {
     });
   }
 
-  Future<void> _goToMe() async {
+  Future<void> _goToMe(double _lat, double _lon) async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_MyLoc));
+    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+        target: LatLng(_lat,_lon),
+        zoom: 11)));
   }
 }
 

@@ -89,6 +89,7 @@ class _ProfilePage extends State<ProfilePage> {
               "-------------------------------------------------------------------------",
               style: TextStyle(color: Colors.white),
             ),
+
             SizedBox(height: space),
             GestureDetector(
               onTap: () async {
@@ -135,34 +136,6 @@ class _ProfilePage extends State<ProfilePage> {
                 ),
                 Container(
                   child: const Icon(
-                    Icons.archive_rounded,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                ),
-                SizedBox(width: space),
-                const Text(
-                  "Notificaciones",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: space),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: leftpad,
-                  ),
-                ),
-                Container(
-                  child: const Icon(
                     Icons.settings,
                     color: Colors.white,
                     size: 40,
@@ -174,34 +147,6 @@ class _ProfilePage extends State<ProfilePage> {
                 SizedBox(width: space),
                 const Text(
                   "Configuraciones",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: space),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: leftpad,
-                  ),
-                ),
-                Container(
-                  child: const Icon(
-                    Icons.add_circle_rounded,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                ),
-                SizedBox(width: space),
-                const Text(
-                  "Invitar Amigos",
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,

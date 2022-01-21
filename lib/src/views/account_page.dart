@@ -27,12 +27,10 @@ class _AccountPage extends State<AccountPage> {
           actions: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 12, bottom: 12),
-              child: Flexible(
-                child: Image.asset(
-                  'images/tempsnip.png',
-                  height: 400,
-                  alignment: Alignment.bottomRight,
-                ),
+              child: Image.asset(
+                'images/tempsnip.png',
+                height: 400,
+                alignment: Alignment.bottomRight,
               ),
             ),
           ],

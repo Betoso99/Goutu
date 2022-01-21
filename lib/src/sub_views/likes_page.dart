@@ -17,6 +17,7 @@ import 'package:goutu/src/views/map_home_page.dart';
 ];*/
 
 List<Places> fav_spots = <Places>[];
+List<Places> objs = <Places>[];
 
 List<List<double>> polylinesarr = [
 /*  [18.472425, -69.926299],
@@ -43,10 +44,10 @@ class _LikesPage extends State<LikesPage> {
   late LatLng startLocation;
   late LatLng endLocation;
 
-  void getPlacesData () async{
+  void getSpotsData () async{
     var body = await getTouristSpotsByUser(widget.user.username!);
     fav_spots = json.decode(utf8.decode(body.bodyBytes))['favorite_tourist_spots'].map<Places>((value) => Places.fromJson(value)).toList();
-    items = fav_spots;
+    objs = fav_spots;
 
     setState(() {});
   }
@@ -56,7 +57,7 @@ class _LikesPage extends State<LikesPage> {
     super.initState();
 
     WidgetsBinding.instance
-        ?.addPostFrameCallback((_) {getPlacesData();
+        ?.addPostFrameCallback((_) {getSpotsData();
     });
   }
 

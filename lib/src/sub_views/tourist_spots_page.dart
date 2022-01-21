@@ -14,10 +14,7 @@ import 'package:goutu/src/views/map_home_page.dart';
 final tripController = TextEditingController();
 
 List<Places> spots = <Places>[];
-
-//List<List<double>> polylinesarr = [];
-
-//var polylinesdef = polylinesarr.map((e) => LatLng(e[0],e[1])).toList();
+List<Places> objs = <Places>[];
 
 class NewHomePage extends StatefulWidget {
   final User user;
@@ -33,13 +30,15 @@ class _NewHomePage extends State<NewHomePage> {
   String googleAPiKey = "AIzaSyB_iMzzl__vncphopqHr8r51Frw5H_q2eU";
   List<LatLng> polylineCoordinates = [];
 
+/*
   late LatLng startLocation;
   late LatLng endLocation;
+*/
 
-  void getPlacesData () async{
+  void getSpotsData () async{
     var body = await getTouristSpots();
     spots = json.decode(utf8.decode(body.bodyBytes)).map<Places>((value) => Places.fromJson(value)).toList();
-    items = spots;
+    objs = spots;
 
     setState(() {});
   }
@@ -49,11 +48,11 @@ class _NewHomePage extends State<NewHomePage> {
     super.initState();
 
     WidgetsBinding.instance
-        ?.addPostFrameCallback((_) {getPlacesData();
+        ?.addPostFrameCallback((_) {getSpotsData();
     });
   }
 
-  getDirections() async {
+  getDirections(LatLng startLocation, LatLng endLocation) async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       googleAPiKey,
       PointLatLng(startLocation.latitude, startLocation.longitude),
@@ -149,9 +148,9 @@ class _NewHomePage extends State<NewHomePage> {
                         GestureDetector(
                           onTap: () async {
                             var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                            startLocation = LatLng(position.latitude, position.longitude);
-                            endLocation = LatLng(double.parse(spots[index].latitude!),double.parse(spots[index].longitude!));
-                            getDirections();
+                            var start = LatLng(position.latitude, position.longitude);
+                            var end = LatLng(double.parse(spots[index].latitude!),double.parse(spots[index].longitude!));
+                            await getDirections(start,end);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
