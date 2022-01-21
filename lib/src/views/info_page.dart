@@ -87,7 +87,7 @@ class _InfoPage extends State<InfoPage> {
                             Row(
                               children: [
                                 const SizedBox(width: 30,),
-                                Center(child: Text(
+                                Flexible(child: Text(
                                   widget.place.address!,
                                   style: const TextStyle(
                                     fontSize: 15,

@@ -225,8 +225,9 @@ StatefulWidget _registerButton(){
               'password': pController.text,
               "confirm_password": cpController.text,
             };
-            final  res = await createUser(User.fromJson(usr));
-
+            print(usr);
+            final res = await createUser(User.fromJson(usr));
+            print(res);
             if(res == 201) {
               Navigator.pushAndRemoveUntil(context,
                 MaterialPageRoute(builder: (context) => const HomePage()),
@@ -234,7 +235,10 @@ StatefulWidget _registerButton(){
               );
             }
             else{
-              registerdPopupDialog(context);
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => registerdPopupDialog(context),
+              );
             }
             },
           style: ElevatedButton.styleFrom(

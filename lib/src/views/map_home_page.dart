@@ -86,6 +86,7 @@ class MapSampleState extends State<MapSample> {
 
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) {
+          markers.clear();
           getPlacesData();
           if(widget.poly != []){
             setPolylines(widget.poly);
