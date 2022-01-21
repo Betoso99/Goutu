@@ -68,10 +68,10 @@ class MapSampleState extends State<MapSample> {
       markerId: MarkerId(markers.length.toString()),
       position: LatLng(_lat, _lng), //position of marker
       infoWindow: const InfoWindow( //popup info
-        title: 'My Custom Title ',
-        snippet: 'My Custom Subtitle',
+        title: 'Nombre de Parada',
+        snippet: 'Parada #',
       ),
-      icon: BitmapDescriptor.defaultMarker//Icon(Icons.location_on), //Icon for Marker
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure)//Icon(Icons.location_on), //Icon for Marker
     ));
 
   }
@@ -133,20 +133,21 @@ class MapSampleState extends State<MapSample> {
     };
     print(nodes);
     var path = await getGraphRoute(nodes);
-    var path_info = Pathing.fromJson(json.decode(path.body)['shortest_path'][0]);
+    var shortest = json.decode(path.body)['shortest_path'];
+    List<Pathing> path_info = shortest.map<Pathing>((value) => Pathing.fromJson(value)).toList();
+
     polylinesdef = [];
-    path_info.route_coordinates?.forEach((element) {
-      polylinesdef.add(LatLng(element['coordinates'][0], element['coordinates'][1]));
-      if(element['is_stop'] == true){
-        setMarkers(element['coordinates'][0], element['coordinates'][1]);
-      }
-      print(element['coordinates']);
+
+    path_info.forEach((element) {
+      print(element.route_coordinates?.first['coordinates'][0]);
+      setMarkers(element.route_coordinates?.first['coordinates'][0], element.route_coordinates?.first['coordinates'][1]);
+      setMarkers(element.route_coordinates?.last['coordinates'][0], element.route_coordinates?.last['coordinates'][1]);
+      element.route_coordinates?.forEach((e){
+        polylinesdef.add(LatLng(e['coordinates'][0], e['coordinates'][1]));
+      });
     });
-    polylinesdef.forEach((element) {print(element);});
+    //polylinesdef.forEach((element) {print(element);});
     setPolylines(polylinesdef);
-    setMarkers(path_info.route_coordinates!.first['coordinates'][0], path_info.route_coordinates!.first['coordinates'][1]);
-    setMarkers(path_info.route_coordinates!.last['coordinates'][0], path_info.route_coordinates!.last['coordinates'][1]);
-    _goToMe(path_info.route_coordinates![0]['coordinates'][0],path_info.route_coordinates![0]['coordinates'][1]);
     fromController.clear();
     toController.clear();
     setState(() {    });
@@ -156,7 +157,7 @@ class MapSampleState extends State<MapSample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home Page"),
+        title: Text("GouTu"),
         automaticallyImplyLeading: false,
         backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         actions: <Widget>[
@@ -337,6 +338,7 @@ class MapSampleState extends State<MapSample> {
                                                       FloatingActionButton(
                                                         onPressed: () async {
                                                           /*if(count == true){*/
+                                                          markers.clear();
                                                             var res = await getRoute(items[index].id!);
                                                             var tmp = jsonDecode(res.body.toString());
                                                             setMarkers(double.parse(tmp.first[0]), double.parse(tmp.first[1]));
@@ -346,15 +348,6 @@ class MapSampleState extends State<MapSample> {
                                                             var n = (polylinesdef.length/2).round();
                                                             _goToMe(polylinesdef[n].latitude, polylinesdef[n].longitude);
                                                             setState(() {});
-                                                            //print(count.toString());
-                                                          /*}
-                                                          else{
-                                                            markers.clear();
-                                                            polylinesdef.clear();
-                                                            setState(() {});
-                                                            count = true;
-                                                            print(count.toString());
-                                                          }*/
                                                         },
                                                         child: const FaIcon(FontAwesomeIcons.solidEye,size: 20,),
                                                         heroTag: index.toString(),
@@ -432,6 +425,9 @@ class MapSampleState extends State<MapSample> {
                                         from_node = 0;
                                         to_node = 0;
                                       },
+                                      style: const TextStyle(
+                                        color: Colors.white
+                                      ),
                                       controller: fromController,
                                       decoration: InputDecoration(
                                         icon: Container(
@@ -463,6 +459,9 @@ class MapSampleState extends State<MapSample> {
                                       onChanged: (value) {
                                         filterSearchResults(value);
                                       },
+                                      style: const TextStyle(
+                                          color: Colors.white
+                                      ),
                                       controller: toController,
                                       decoration: InputDecoration(
                                         icon: Container(
@@ -474,6 +473,7 @@ class MapSampleState extends State<MapSample> {
                                             color: Colors.white54,
                                           ),
                                         ),
+
                                         hintText: "To where?",
                                         hintStyle: const TextStyle(
                                             color: Colors.white,

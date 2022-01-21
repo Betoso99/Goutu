@@ -13,6 +13,7 @@ String placesToJson(Places data) {
 class Places {
   int? id;
   String? name;
+  String? address;
   String? description;
   String? price;
   int? province;
@@ -25,11 +26,12 @@ class Places {
   List<dynamic>? image_urls;
   List<dynamic>? stops;
 
-  Places({this.id, this.name, this.description, this.price, this.province, this.province_name, this.transport_type, this.organization, this.route_coordinates, this.image_urls, this.longitude, this.latitude, this.stops});
+  Places({this.id, this.name, this.description, this.price, this.province, this.province_name, this.transport_type, this.organization, this.route_coordinates, this.image_urls, this.longitude, this.latitude, this.stops, this.address});
 
   factory Places.fromJson(Map<String, dynamic> json) => Places(
       id: json['id'],
       name: json['name'],
+      address: json['address'],
       description: json['description'],
       price: json['price'],
       province: json['province'],
@@ -46,6 +48,7 @@ class Places {
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
+    "address":address,
     "description": description,
     "price": price,
     "province": province,

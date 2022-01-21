@@ -24,9 +24,9 @@ class _InfoPage extends State<InfoPage> {
           children: [
             Image.network(widget.place.image_urls![1]),
             DraggableScrollableSheet(
-              initialChildSize: 0.8,
-              minChildSize: 0.65,
-              maxChildSize: 0.8,
+              initialChildSize: 0.78,
+              minChildSize: 0.78,
+              maxChildSize: 0.78,
               builder: (BuildContext context, ScrollController scrollController) {
                 return SingleChildScrollView(
                   controller: scrollController,
@@ -84,27 +84,18 @@ class _InfoPage extends State<InfoPage> {
                               style: TextStyle(color: Colors.white),
                             ),
                             SizedBox(height: space),
-
-                            /*SizedBox(height: space),
-                            const Text(
-                              "-------------------------------------------------------------------------",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            SizedBox(height: space),
                             Row(
                               children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: leftpad,
-                                  ),
-                                ),
-                                const Text(
-                                  "# Transferencias 3",
-                                  style: TextStyle(
-                                    fontSize: 20,
+                                const SizedBox(width: 30,),
+                                Center(child: Text(
+                                  widget.place.address!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
                                     color: Colors.white,
                                   ),
-                                )
+                                  textAlign: TextAlign.center,
+                                )),
+                                const SizedBox(width: 30,),
                               ],
                             ),
                             SizedBox(height: space),
@@ -112,22 +103,6 @@ class _InfoPage extends State<InfoPage> {
                               "-------------------------------------------------------------------------",
                               style: TextStyle(color: Colors.white),
                             ),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: leftpad,
-                                  ),
-                                ),
-                                const Text(
-                                  "...",
-                                  style: TextStyle(
-                                    fontSize: 40,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            ),*/
                           ],
                         ),
                       ),
@@ -141,7 +116,7 @@ class _InfoPage extends State<InfoPage> {
                 right: 35,
                 left: 35,
                 top: 90,
-                bottom: 510
+                bottom: 600
               ),
               child: Container(
                 decoration: BoxDecoration(
@@ -152,9 +127,10 @@ class _InfoPage extends State<InfoPage> {
                 child: Flexible(
                   child: Text(
                     widget.place.name!,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20
+                        fontSize: 25
                     ),
                   ),
                 )

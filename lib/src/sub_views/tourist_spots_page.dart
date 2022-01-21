@@ -38,7 +38,8 @@ class _NewHomePage extends State<NewHomePage> {
   void getSpotsData () async{
     var body = await getTouristSpots();
     spots = json.decode(utf8.decode(body.bodyBytes)).map<Places>((value) => Places.fromJson(value)).toList();
-    objs = spots;
+    objs.clear();
+    objs.addAll(spots);
 
     setState(() {});
   }
@@ -66,6 +67,30 @@ class _NewHomePage extends State<NewHomePage> {
       });
     } else {
       print(result.errorMessage);
+    }
+  }
+
+  void filterSearchResults(String query) {
+    List<Places>? dummySearchList = <Places>[];
+    dummySearchList.addAll(spots);
+    if(query.isNotEmpty) {
+      List<Places>? dummyListData = <Places>[];
+      for (var item in dummySearchList) {
+        if(item.name!.toLowerCase().contains(query.toLowerCase())) {
+          dummyListData.add(item);
+        }
+      }
+      setState(() {
+        objs.clear();
+        objs.addAll(dummyListData);
+      });
+      return;
+    }
+    else {
+      setState(() {
+        objs.clear();
+        objs.addAll(spots);
+      });
     }
   }
 
@@ -107,11 +132,11 @@ class _NewHomePage extends State<NewHomePage> {
                 child: TextField(
                   onChanged: (String str) {
                     //Logica de Filtro
-                    if (str.isEmpty) {
-                      setState(() {});
-                      return;
-                    }
+                    filterSearchResults(str);
                   },
+                  style: const TextStyle(
+                      color: Colors.white
+                  ),
                   decoration: InputDecoration(
                     icon: Container(
                       margin: const EdgeInsets.only(left: 20, bottom: 15),
@@ -137,7 +162,7 @@ class _NewHomePage extends State<NewHomePage> {
               padding: const EdgeInsets.only(top: 60),
               child: ListView.separated(
                 padding: const EdgeInsets.all(15),
-                itemCount: spots.length,
+                itemCount: objs.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     height: 100,
@@ -149,7 +174,7 @@ class _NewHomePage extends State<NewHomePage> {
                           onTap: () async {
                             var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
                             var start = LatLng(position.latitude, position.longitude);
-                            var end = LatLng(double.parse(spots[index].latitude!),double.parse(spots[index].longitude!));
+                            var end = LatLng(double.parse(objs[index].latitude!),double.parse(objs[index].longitude!));
                             await getDirections(start,end);
                             Navigator.push(
                                 context,
@@ -165,11 +190,11 @@ class _NewHomePage extends State<NewHomePage> {
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(spots[index].image_urls![0].toString()),
+                                    image: NetworkImage(objs[index].image_urls![0].toString()),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 5),
+                              const SizedBox(width: 20),
                               SizedBox(
                                 width: 125,
                                 child: Column(
@@ -178,7 +203,7 @@ class _NewHomePage extends State<NewHomePage> {
                                   children: [
                                     const SizedBox(height: 10),
                                     Text(
-                                      spots[index].name.toString(),
+                                      objs[index].name.toString(),
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                     const SizedBox(height: 10),
@@ -206,7 +231,7 @@ class _NewHomePage extends State<NewHomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              InfoPage(place: spots[index])));
+                                              InfoPage(place: objs[index])));
                                 },
                                 child: Container(
                                   child: const Icon(
@@ -224,7 +249,7 @@ class _NewHomePage extends State<NewHomePage> {
                               GestureDetector(
                                 onTap: () async {
                                   Map<String, int> body = {
-                                    "favorite_spot": spots[index].id!
+                                    "favorite_spot": objs[index].id!
                                   };
                                   addTouristSpotsByUser(widget.user.username!,body);
 

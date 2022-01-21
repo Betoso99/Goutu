@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/controllers/user_controller.dart';
 import 'package:goutu/src/views/home_page.dart';
+import 'package:goutu/widgets/popup_widget.dart';
 
 class RegisterPage extends StatefulWidget{
   static String identifier = 'loginPage';
@@ -231,6 +232,9 @@ StatefulWidget _registerButton(){
                 MaterialPageRoute(builder: (context) => const HomePage()),
                 ModalRoute.withName('/'),
               );
+            }
+            else{
+              registerdPopupDialog(context);
             }
             },
           style: ElevatedButton.styleFrom(

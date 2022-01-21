@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/user.dart';
+import 'package:goutu/src/views/about_us_page.dart';
 import 'package:goutu/src/views/account_page.dart';
 import 'package:goutu/src/views/map_home_page.dart';
 
@@ -127,61 +128,87 @@ class _ProfilePage extends State<ProfilePage> {
               ),
             ),
             SizedBox(height: space),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: leftpad,
+            GestureDetector(
+              onTap: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AboutPage()));
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: leftpad,
+                    ),
                   ),
-                ),
-                Container(
-                  child: const Icon(
-                    Icons.settings,
-                    color: Colors.white,
-                    size: 40,
+                  Container(
+                    child: const Icon(
+                      Icons.help,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: const Color.fromRGBO(253, 175, 1, 1)),
                   ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                ),
-                SizedBox(width: space),
-                const Text(
-                  "Configuraciones",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                )
-              ],
+                  SizedBox(width: space),
+                  const Text(
+                    "Información",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
             ),
             SizedBox(height: space),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: leftpad,
+            GestureDetector(
+              onTap: ()async{
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AccountPage(user: widget.user,)));
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: leftpad,
+                    ),
                   ),
-                ),
-                Container(
-                  child: const Icon(
-                    Icons.help,
-                    color: Colors.white,
-                    size: 40,
+                  Container(
+                    child: const Icon(
+                      Icons.settings,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: const Color.fromRGBO(253, 175, 1, 1)),
                   ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color.fromRGBO(253, 175, 1, 1)),
-                ),
-                SizedBox(width: space),
-                const Text(
-                  "Ayuda",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            )
+                  SizedBox(width: space),
+                  const Text(
+                    "Configuraciones",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              child: Image.asset('images/descargar.png',
+                alignment: Alignment.bottomCenter,
+                height: 300,
+                width: 380,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+            ),
           ],
         ),
         backgroundColor: const Color.fromRGBO(16, 16, 16, 1),

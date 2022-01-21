@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:goutu/models/user.dart';
 import 'package:goutu/src/controllers/user_controller.dart';
 import 'package:goutu/src/sub_views/tourist_spots_page.dart';
+import 'package:goutu/widgets/popup_widget.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:goutu/src/views/map_home_page.dart';
@@ -139,7 +140,13 @@ StatefulWidget _loginButton(){
                   MapSample(poly: poli, user: userLog)),
                 ModalRoute.withName('/'),
               );
-            };
+            }
+            else{
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => buildPopupDialog(context),
+              );
+            }
           },
           style: ElevatedButton.styleFrom(
             primary: const Color.fromRGBO(255, 80, 47, 1.0),

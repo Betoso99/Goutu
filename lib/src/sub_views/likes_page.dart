@@ -47,7 +47,9 @@ class _LikesPage extends State<LikesPage> {
   void getSpotsData () async{
     var body = await getTouristSpotsByUser(widget.user.username!);
     fav_spots = json.decode(utf8.decode(body.bodyBytes))['favorite_tourist_spots'].map<Places>((value) => Places.fromJson(value)).toList();
-    objs = fav_spots;
+    fav_spots.forEach((element) {print(element.name);});
+    objs.clear();
+    objs.addAll(fav_spots);
 
     setState(() {});
   }
@@ -59,6 +61,7 @@ class _LikesPage extends State<LikesPage> {
     WidgetsBinding.instance
         ?.addPostFrameCallback((_) {getSpotsData();
     });
+    setState(() {});
   }
 
   getDirections() async {
@@ -77,6 +80,30 @@ class _LikesPage extends State<LikesPage> {
       print(result.errorMessage);
     }
     //addPolyLine(polylineCoordinates);
+  }
+
+  void filterSearchResults(String query) {
+    List<Places>? dummySearchList = <Places>[];
+    dummySearchList.addAll(fav_spots);
+    if(query.isNotEmpty) {
+      List<Places>? dummyListData = <Places>[];
+      for (var item in dummySearchList) {
+        if(item.name!.toLowerCase().contains(query.toLowerCase())) {
+          dummyListData.add(item);
+        }
+      }
+      setState(() {
+        objs.clear();
+        objs.addAll(dummyListData);
+      });
+      return;
+    }
+    else {
+      setState(() {
+        objs.clear();
+        objs.addAll(fav_spots);
+      });
+    }
   }
 
   @override
@@ -117,11 +144,11 @@ class _LikesPage extends State<LikesPage> {
                 child: TextField(
                   onChanged: (String str) {
                     //Logica de Filtro
-                    if (str.isEmpty) {
-                      setState(() {});
-                      return;
-                    }
+                    filterSearchResults(str);
                   },
+                  style: const TextStyle(
+                      color: Colors.white
+                  ),
                   decoration: InputDecoration(
                     icon: Container(
                       margin: const EdgeInsets.only(left: 20, bottom: 15),
@@ -147,7 +174,7 @@ class _LikesPage extends State<LikesPage> {
               padding: const EdgeInsets.only(top: 60),
               child: ListView.separated(
                 padding: const EdgeInsets.all(15),
-                itemCount: fav_spots.length,
+                itemCount: objs.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     height: 100,
@@ -159,7 +186,7 @@ class _LikesPage extends State<LikesPage> {
                           onTap: () async {
                             var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
                             startLocation = LatLng(position.latitude, position.longitude);
-                            endLocation = LatLng(double.parse(fav_spots[index].latitude!),double.parse(fav_spots[index].longitude!));
+                            endLocation = LatLng(double.parse(objs[index].latitude!),double.parse(objs[index].longitude!));
                             getDirections();
                             Navigator.push(
                                 context,
@@ -175,11 +202,11 @@ class _LikesPage extends State<LikesPage> {
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(fav_spots[index].image_urls![0].toString()),
+                                    image: NetworkImage(objs[index].image_urls![0].toString()),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 5),
+                              const SizedBox(width: 20),
                               SizedBox(
                                 width: 125,
                                 child: Column(
@@ -188,7 +215,7 @@ class _LikesPage extends State<LikesPage> {
                                   children: [
                                     const SizedBox(height: 10),
                                     Text(
-                                      fav_spots[index].name.toString(),
+                                      objs[index].name.toString(),
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                     const SizedBox(height: 10),
@@ -216,7 +243,7 @@ class _LikesPage extends State<LikesPage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              InfoPage(place: fav_spots[index])));
+                                              InfoPage(place: objs[index])));
                                 },
                                 child: Container(
                                   child: const Icon(
@@ -233,8 +260,8 @@ class _LikesPage extends State<LikesPage> {
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () async {
-                                  deleteTouristSpotsByUser(widget.user.username!, fav_spots[index].id!);
-                                  fav_spots.removeAt(index);
+                                  deleteTouristSpotsByUser(widget.user.username!, objs[index].id!);
+                                  objs.removeAt(index);
                                   setState(() {
                                   });
                                 },
